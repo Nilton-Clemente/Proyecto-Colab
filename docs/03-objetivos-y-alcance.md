@@ -56,5 +56,5 @@ Desarrollar una aplicación **móvil y web** que, mediante el uso de inteligenci
 
 > **Plataforma de administración (parte del MVP):** la arquitectura incluye una **plataforma de
 > administración** (frontend React + backend Django) que forma parte del entregable. Su alcance
-> funcional detallado se define en el [05 — Diseño](05-diseno.md) y [06 — Gestión](06-gestion.md) (ver
+> funcional detallado se define en el [05 — Diseño](05-diseno/README.md) y [06 — Gestión](06-gestion.md) (ver
 > [ARQUITECTURA](ARQUITECTURA.md)).

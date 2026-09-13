@@ -130,6 +130,7 @@ El prompt debe instruir a la IA a responder **únicamente con JSON válido** (si
       "orden": 1,
       "tareas": [
         {
+          "id": "t1",
           "nombre": "Definir requerimientos funcionales",
           "descripcion": "Redactar los RF del proyecto.",
           "responsable": "correo.del.integrante@ejemplo.com",
@@ -137,6 +138,16 @@ El prompt debe instruir a la IA a responder **únicamente con JSON válido** (si
           "prioridad": "ALTA",
           "duracionDias": 2,
           "dependencias": []
+        },
+        {
+          "id": "t2",
+          "nombre": "Validar requerimientos",
+          "descripcion": "Revisar los RF con el equipo.",
+          "responsable": "otro.integrante@ejemplo.com",
+          "habilidadesRequeridas": ["Análisis"],
+          "prioridad": "ALTA",
+          "duracionDias": 1,
+          "dependencias": ["t1"]
         }
       ]
     }
@@ -146,8 +157,9 @@ El prompt debe instruir a la IA a responder **únicamente con JSON válido** (si
 
 **Reglas del contrato:**
 
+- `id` es un identificador breve y **único** de cada tarea dentro de la respuesta, usado para referenciar las dependencias.
 - `responsable` debe ser un integrante **existente** en el equipo (identificado por su correo).
-- `dependencias` referencia los `nombre` de tareas predecesoras (finish-to-start).
+- `dependencias` referencia los `id` de las tareas predecesoras (finish-to-start).
 - `duracionDias` debe ser un entero **mayor que 0**.
 - `prioridad` toma valores `ALTA`, `MEDIA` o `BAJA`.
 

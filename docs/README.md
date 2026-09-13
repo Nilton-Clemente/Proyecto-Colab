@@ -10,7 +10,7 @@
 | [02 — Problema](02-problema.md) | Problema general y específico, descripción de la problemática y justificación |
 | [03 — Objetivos y alcance](03-objetivos-y-alcance.md) | Objetivo general, objetivos específicos, alcance y limitaciones |
 | [04 — Análisis](04-analisis/README.md) | Usuarios, actores, funcionalidades, requerimientos, casos de uso, reglas de negocio, historias de usuario e integración de la IA (TECSUP) |
-| [05 — Diseño](05-diseno.md) | Modelo de entidades, relaciones y arquitectura general |
+| [05 — Diseño](05-diseno/README.md) | Modelo de entidades, relaciones y arquitectura general |
 | [06 — Gestión](06-gestion.md) | Priorización de funcionalidades para el MVP y división del trabajo |
 | [ARQUITECTURA](ARQUITECTURA.md) | Arquitectura general del sistema (Administración y Usuario) |
 
@@ -21,5 +21,5 @@
 - ✅ Objetivos y alcance — completado.
 - ✅ Análisis (usuarios, actores, funcionalidades, requerimientos, casos de uso, reglas de negocio) — completado (historias de usuario omitidas).
 - ✅ Integración de la IA (TECSUP — "La BestIA") — completado.
-- 🟡 Diseño — arquitectura documentada en [ARQUITECTURA](ARQUITECTURA.md); entidades y relaciones pendientes.
-- ⬜ Gestión (MVP y división del trabajo) — pendiente.
+- ✅ Diseño — arquitectura en [ARQUITECTURA](ARQUITECTURA.md) y modelo de entidades y relaciones en [05 — Diseño](05-diseno/README.md).
+- ✅ Gestión (priorización del MVP y división del trabajo).

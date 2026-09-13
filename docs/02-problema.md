@@ -49,6 +49,6 @@ Estas dificultades derivan en entregas con retraso, conflictos internos, carga d
 
 **Relevancia práctica.** Ataca directamente una problemática cotidiana de los equipos de estudiantes: la desorganización. Al automatizar la propuesta inicial y controlar dependencias y responsabilidades, reduce fricciones, retrasos y descoordinación.
 
-**Viabilidad.** El alcance está acotado a un **MVP realista** (proyectos de software, notificaciones in-app, autenticación por correo, una sola llamada a la IA) y se apoya en tecnologías consolidadas y ampliamente documentadas (Android/Kotlin/Compose, React, Spring Boot, Django, PostgreSQL). Esto lo hace alcanzable para un equipo de 4 estudiantes en un periodo académico.
+**Viabilidad.** El alcance está acotado a un **MVP realista** (proyectos de software, notificaciones in-app, autenticación por correo, una sola llamada a la IA) y se apoya en tecnologías consolidadas y ampliamente documentadas (Android/Kotlin/Compose, React, Spring Boot, Django, PostgreSQL). Esto lo hace alcanzable para un equipo de 3 estudiantes en un periodo académico.
 
 **Valor diferencial.** A diferencia de las herramientas de gestión genéricas (que exigen construir la planificación a mano), Colab **genera un punto de partida personalizado** según el proyecto y el equipo, que luego el grupo revisa, ajusta y aprueba.

@@ -9,7 +9,7 @@ Las reglas de negocio formalizan las restricciones y comportamientos del dominio
 - **RN-01 — Ciclo de vida.** La planificación pasa por los estados BORRADOR → PROPUESTA → ACTIVA → (opcional) FINALIZADA, en ese orden. El estado PROPUESTA concentra la revisión, la edición manual y la confirmación individual de la propuesta.
 - **RN-02 — Generación única.** La planificación se genera mediante IA una sola vez; no se vuelve a llamar a la IA después de la generación inicial.
 - **RN-03 — Activación por confirmación total.** La planificación pasa de PROPUESTA a ACTIVA solo cuando todos los integrantes (incluido el Creador, si tiene tareas asignadas) han confirmado sus tareas.
-- **RN-04 — Solicitud de cambios.** La edición de la propuesta ocurre en el estado PROPUESTA. Si un integrante solicita cambios, la planificación **se mantiene en PROPUESTA**, se notifica al Creador y las confirmaciones se reinician: tras aplicar los cambios, se requiere una nueva confirmación de todos los integrantes para pasar a ACTIVA.
+- **RN-04 — Solicitud de cambios.** La edición de la propuesta ocurre en el estado PROPUESTA. Si un integrante solicita cambios, la planificación **se mantiene en PROPUESTA**, se notifica al Creador y las confirmaciones se reinician: tras aplicar los cambios, se requiere una nueva confirmación de todos los integrantes para pasar a ACTIVA. En el MVP, la solicitud de cambios solo es posible en PROPUESTA; una vez en ACTIVA **no se retorna a PROPUESTA** (los ajustes posteriores se realizan editando tareas individuales).
 
 ### 13.2 Estados de las tareas
 

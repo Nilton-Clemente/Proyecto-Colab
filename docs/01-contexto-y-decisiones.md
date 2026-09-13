@@ -134,4 +134,4 @@ Reglas automáticas:
 - Además de la aplicación móvil, Colab contará con una **aplicación web de usuario** (React) que consume el mismo backend de Spring Boot.
 - Existirá una **plataforma de administración** (frontend React + backend Django) para las operaciones administrativas del sistema.
 - Ambos backends (Spring Boot y Django) compartirán la misma instancia de PostgreSQL, con esquemas separados (`usuario` y `admin`).
-- La plataforma de administración **forma parte del entregable MVP**; su alcance funcional detallado se define en el [05 — Diseño](05-diseno.md) y [06 — Gestión](06-gestion.md).
+- La plataforma de administración **forma parte del entregable MVP**; su alcance funcional detallado se define en el [05 — Diseño](05-diseno/README.md) y [06 — Gestión](06-gestion.md).
