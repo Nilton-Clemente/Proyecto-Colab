@@ -121,7 +121,7 @@ Los casos de uso describen las interacciones entre los actores y el sistema. Se 
 
 - **Actores:** Creador (Sistema/IA).
 - **Descripción:** Permite generar una propuesta de planificación mediante IA.
-- **Precondiciones:** El proyecto debe cumplir la información mínima (objetivo general, al menos un requerimiento funcional, una tecnología, fecha de entrega y al menos dos integrantes con perfil).
+- **Precondiciones:** El proyecto debe cumplir la información mínima (objetivo general, al menos un requerimiento funcional, una tecnología, fecha de entrega y al menos dos integrantes con perfil, contando al Creador).
 - **Flujo principal:**
   1. El Creador solicita "Generar planificación".
   2. El sistema valida la información mínima.
@@ -148,8 +148,8 @@ Los casos de uso describen las interacciones entre los actores y el sistema. Se 
 
 ### CU-10 — Confirmar tareas asignadas
 
-- **Actores:** Integrante.
-- **Descripción:** Permite a cada integrante aceptar o solicitar cambios sobre sus tareas.
+- **Actores:** Integrante, Creador (en sus propias tareas).
+- **Descripción:** Permite a cada integrante (incluido el Creador, si tiene tareas asignadas) aceptar o solicitar cambios sobre sus tareas.
 - **Precondiciones:** Debe existir una planificación en estado PROPUESTA y el integrante debe tener tareas asignadas.
 - **Flujo principal:**
   1. El integrante visualiza sus tareas propuestas.
@@ -157,7 +157,7 @@ Los casos de uso describen las interacciones entre los actores y el sistema. Se 
   3. El sistema registra la confirmación.
 - **Flujos alternativos:**
   - El integrante solicita cambios con un comentario; el plan vuelve a edición.
-- **Postcondiciones:** El integrante queda confirmado. Cuando todos confirman, la planificación se activa.
+- **Postcondiciones:** El integrante queda confirmado. Cuando todos confirman (incluido el Creador), la planificación se activa.
 
 ### CU-11 — Gestionar tareas
 

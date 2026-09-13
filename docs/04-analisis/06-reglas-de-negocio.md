@@ -6,10 +6,10 @@ Las reglas de negocio formalizan las restricciones y comportamientos del dominio
 
 ### 13.1 Estados de la planificación
 
-- **RN-01 — Ciclo de vida.** La planificación pasa por los estados BORRADOR → PROPUESTA → ACTIVA → (opcional) FINALIZADA, en ese orden.
+- **RN-01 — Ciclo de vida.** La planificación pasa por los estados BORRADOR → PROPUESTA → ACTIVA → (opcional) FINALIZADA, en ese orden. El estado PROPUESTA concentra la revisión, la edición manual y la confirmación individual de la propuesta.
 - **RN-02 — Generación única.** La planificación se genera mediante IA una sola vez; no se vuelve a llamar a la IA después de la generación inicial.
-- **RN-03 — Activación por confirmación total.** La planificación pasa de PROPUESTA a ACTIVA solo cuando todos los integrantes han confirmado sus tareas.
-- **RN-04 — Solicitud de cambios.** Si un integrante solicita cambios, la planificación vuelve a edición y se requiere una nueva confirmación de todos.
+- **RN-03 — Activación por confirmación total.** La planificación pasa de PROPUESTA a ACTIVA solo cuando todos los integrantes (incluido el Creador, si tiene tareas asignadas) han confirmado sus tareas.
+- **RN-04 — Solicitud de cambios.** La edición de la propuesta ocurre en el estado PROPUESTA. Si un integrante solicita cambios, la planificación **se mantiene en PROPUESTA**, se notifica al Creador y las confirmaciones se reinician: tras aplicar los cambios, se requiere una nueva confirmación de todos los integrantes para pasar a ACTIVA.
 
 ### 13.2 Estados de las tareas
 
@@ -27,17 +27,17 @@ Las reglas de negocio formalizan las restricciones y comportamientos del dominio
 
 ### 13.4 Roles y permisos
 
-- **RN-13 — Rol de Creador.** El usuario que crea un proyecto es su Creador y tiene permisos de administración.
+- **RN-13 — Rol de Creador.** El usuario que crea un proyecto es su Creador: además de ser integrante del equipo, tiene permisos de administración.
 - **RN-14 — Permisos del Creador.** Solo el Creador puede editar la información del proyecto, invitar o eliminar integrantes, generar la planificación, editar la propuesta y cambiar el estado de cualquier tarea.
-- **RN-15 — Permisos del Integrante.** El Integrante solo puede confirmar sus tareas y cambiar el estado de las tareas que tiene asignadas.
-- **RN-16 — Responsable único.** Cada tarea tiene como máximo un responsable (integrante).
+- **RN-15 — Permisos del Integrante.** El Integrante (incluido el Creador en sus propias tareas) solo puede confirmar sus tareas y cambiar el estado de las tareas que tiene asignadas.
+- **RN-16 — Responsable único.** Cada tarea tiene como máximo un responsable, que puede ser cualquier integrante del equipo (incluido el Creador).
 - **RN-17 — Aceptación de invitación.** Un usuario se convierte en Integrante de un proyecto solo después de aceptar la invitación enviada por el Creador.
 
 ### 13.5 Generación de la planificación
 
-- **RN-18 — Información mínima.** Para generar la planificación, el proyecto debe tener: objetivo general, al menos un requerimiento funcional, una tecnología, fecha de entrega y al menos dos integrantes con perfil de habilidades.
+- **RN-18 — Información mínima.** Para generar la planificación, el proyecto debe tener: objetivo general, al menos un requerimiento funcional, una tecnología, fecha de entrega y al menos dos integrantes con perfil de habilidades (contando al Creador).
 - **RN-19 — Validación de la salida.** La salida de la IA debe validarse: dependencias sin ciclos, responsables existentes y duraciones positivas.
-- **RN-20 — Cálculo de fechas.** Las fechas de las tareas las calcula el backend (hacia atrás desde la fecha de entrega, en días hábiles), a partir de las duraciones propuestas por la IA.
+- **RN-20 — Cálculo de fechas.** Las fechas de las tareas las calcula el backend (hacia atrás desde la fecha de entrega, contando **días naturales** del calendario), a partir de las duraciones propuestas por la IA.
 - **RN-21 — Advertencia de fecha.** Si la planificación excede la fecha de entrega, se muestra una advertencia de riesgo, sin bloquear la generación.
 
 ### 13.6 Notificaciones

@@ -18,7 +18,7 @@ El sistema está dirigido principalmente a **estudiantes de educación superior*
 - Completar su perfil con sus habilidades y conocimientos mediante un catálogo.
 - Crear un proyecto (convirtiéndose en su Creador) o unirse a uno como Integrante invitado.
 
-En esta versión no se contemplan otros tipos de usuario (por ejemplo, docentes o administradores de la plataforma).
+En la plataforma de usuario no se contemplan otros tipos de cuenta (por ejemplo, docentes). La **plataforma de administración** (React + Django) **forma parte del MVP** y se describe en [ARQUITECTURA](../ARQUITECTURA.md); su actor principal (Administrador) y sus funciones se detallan en el diseño y la gestión.
 
 ---
 
@@ -28,7 +28,7 @@ Los actores representan los roles que interactúan con el sistema. Un mismo usua
 
 ### Actor 1 — Creador
 
-Usuario que crea el proyecto y actúa como su administrador. Sus responsabilidades:
+Integrante del equipo que crea el proyecto y que, además de su rol de integrante, actúa como su administrador. Sus responsabilidades adicionales:
 
 - Crear y editar la información del proyecto.
 - Invitar o eliminar integrantes.
@@ -53,4 +53,8 @@ Actor no humano que interactúa con el backend:
 - La **inteligencia artificial (LLM)** analiza la información del proyecto y las habilidades del equipo, y genera la propuesta de planificación en formato JSON.
 - El **backend** valida la salida de la IA, calcula las fechas y controla las dependencias y notificaciones.
 
-> **Nota:** "Creador" e "Integrante" son **roles dentro de un proyecto**, no tipos de cuenta distintos. Cualquier usuario registrado puede crear proyectos o ser invitado a ellos.
+### Actor 4 — Administrador (plataforma de administración)
+
+Usuario de la **plataforma de administración** (React + Django, parte del MVP) a cargo de las operaciones administrativas del sistema (mantenimiento de usuarios, configuración y soporte de la plataforma). Su detalle funcional se define en el diseño y la gestión (ver [ARQUITECTURA](../ARQUITECTURA.md)).
+
+> **Nota:** "Creador" e "Integrante" son **roles dentro de un proyecto**, no tipos de cuenta distintos. El **Creador es también un integrante** del equipo (con permisos de administración) y cuenta como tal a efectos de la información mínima y de la confirmación. Cualquier usuario registrado puede crear proyectos o ser invitado a ellos.
