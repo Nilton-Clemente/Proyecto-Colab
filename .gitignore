@@ -5,8 +5,7 @@
 target/
 *.class
 *.jar
-!.mvn/wrapper/maven-wrapper.jar
-.mvn/
+.mvn/wrapper/maven-wrapper.jar
 
 # ===== Gradle (Android / Spring con Gradle) =====
 build/
