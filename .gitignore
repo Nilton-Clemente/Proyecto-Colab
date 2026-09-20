@@ -6,6 +6,11 @@ target/
 *.class
 *.jar
 .mvn/wrapper/maven-wrapper.jar
+*.log
+
+# Artefactos temporales locales (diagnostico manual)
+backend-usuario/build-out.txt
+backend-usuario/deps.txt
 
 # ===== Gradle (Android / Spring con Gradle) =====
 build/
