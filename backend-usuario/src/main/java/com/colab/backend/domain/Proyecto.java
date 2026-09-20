@@ -3,9 +3,13 @@ package com.colab.backend.domain;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -15,7 +19,9 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -55,6 +61,22 @@ public class Proyecto {
 
     @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Integrante> integrantes = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "proyecto_tecnologia",
+            joinColumns = @JoinColumn(name = "proyecto_id"),
+            inverseJoinColumns = @JoinColumn(name = "tecnologia_id"))
+    private Set<Tecnologia> tecnologias = new HashSet<>();
+
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RequerimientoFuncional> requerimientosFuncionales = new ArrayList<>();
+
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RequerimientoNoFuncional> requerimientosNoFuncionales = new ArrayList<>();
+
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CasoUso> casosDeUso = new ArrayList<>();
 
     @PrePersist
     void prePersist() {

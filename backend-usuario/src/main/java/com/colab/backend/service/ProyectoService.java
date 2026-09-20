@@ -1,14 +1,23 @@
 package com.colab.backend.service;
 
+import com.colab.backend.domain.CasoUso;
 import com.colab.backend.domain.Integrante;
 import com.colab.backend.domain.Proyecto;
+import com.colab.backend.domain.RequerimientoFuncional;
+import com.colab.backend.domain.RequerimientoNoFuncional;
+import com.colab.backend.domain.Tecnologia;
 import com.colab.backend.domain.Usuario;
+import com.colab.backend.dto.CasoUsoDto;
 import com.colab.backend.dto.IntegranteResponse;
 import com.colab.backend.dto.InvitacionResponse;
 import com.colab.backend.dto.ProyectoRequest;
 import com.colab.backend.dto.ProyectoResponse;
+import com.colab.backend.dto.RequerimientoFuncionalDto;
+import com.colab.backend.dto.RequerimientoNoFuncionalDto;
+import com.colab.backend.dto.TecnologiaDto;
 import com.colab.backend.repository.IntegranteRepository;
 import com.colab.backend.repository.ProyectoRepository;
+import com.colab.backend.repository.TecnologiaRepository;
 import com.colab.backend.repository.UsuarioRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -26,13 +35,16 @@ public class ProyectoService {
     private final ProyectoRepository proyectoRepository;
     private final IntegranteRepository integranteRepository;
     private final UsuarioRepository usuarioRepository;
+    private final TecnologiaRepository tecnologiaRepository;
 
     public ProyectoService(ProyectoRepository proyectoRepository,
                            IntegranteRepository integranteRepository,
-                           UsuarioRepository usuarioRepository) {
+                           UsuarioRepository usuarioRepository,
+                           TecnologiaRepository tecnologiaRepository) {
         this.proyectoRepository = proyectoRepository;
         this.integranteRepository = integranteRepository;
         this.usuarioRepository = usuarioRepository;
+        this.tecnologiaRepository = tecnologiaRepository;
     }
 
     @Transactional
@@ -40,14 +52,7 @@ public class ProyectoService {
         Usuario u = usuarioActual();
 
         Proyecto p = new Proyecto();
-        p.setNombre(request.nombre());
-        p.setDescripcion(request.descripcion());
-        p.setProblematica(request.problematica());
-        p.setObjetivoGeneral(request.objetivoGeneral());
-        p.setObjetivosEspecificos(request.objetivosEspecificos());
-        p.setAlcance(request.alcance());
-        p.setRestricciones(request.restricciones());
-        p.setFechaEntrega(request.fechaEntrega());
+        aplicarRequest(p, request);
         proyectoRepository.save(p);
 
         // El creador queda registrado como integrante con rol CREADOR.
@@ -62,6 +67,27 @@ public class ProyectoService {
         return aResponse(p);
     }
 
+    @Transactional
+    public ProyectoResponse editarProyecto(Long id, ProyectoRequest request) {
+        Usuario u = usuarioActual();
+        Proyecto p = proyectoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Proyecto no existe"));
+        verificarCreador(u, id);
+
+        aplicarRequest(p, request);
+        proyectoRepository.save(p);
+        return aResponse(p);
+    }
+
+    @Transactional
+    public void eliminarProyecto(Long id) {
+        Usuario u = usuarioActual();
+        Proyecto p = proyectoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Proyecto no existe"));
+        verificarCreador(u, id);
+        proyectoRepository.delete(p);
+    }
+
     @Transactional(readOnly = true)
     public List<ProyectoResponse> listarMisProyectos() {
         Usuario u = usuarioActual();
@@ -71,6 +97,7 @@ public class ProyectoService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public ProyectoResponse verProyecto(Long id) {
         Usuario u = usuarioActual();
         Proyecto p = proyectoRepository.findById(id)
@@ -167,6 +194,67 @@ public class ProyectoService {
         integranteRepository.delete(i);
     }
 
+    private void aplicarRequest(Proyecto p, ProyectoRequest request) {
+        p.setNombre(request.nombre());
+        p.setDescripcion(request.descripcion());
+        p.setProblematica(request.problematica());
+        p.setObjetivoGeneral(request.objetivoGeneral());
+        p.setObjetivosEspecificos(request.objetivosEspecificos());
+        p.setAlcance(request.alcance());
+        p.setRestricciones(request.restricciones());
+        p.setFechaEntrega(request.fechaEntrega());
+
+        // Tecnologias (N:M)
+        if (request.tecnologiasIds() != null && !request.tecnologiasIds().isEmpty()) {
+            List<Tecnologia> tecnologias = tecnologiaRepository.findAllById(request.tecnologiasIds());
+            if (tecnologias.size() != request.tecnologiasIds().size()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Una o más tecnologías no existen");
+            }
+            p.getTecnologias().clear();
+            p.getTecnologias().addAll(tecnologias);
+        } else {
+            p.getTecnologias().clear();
+        }
+
+        // Requerimientos funcionales (1:N)
+        p.getRequerimientosFuncionales().clear();
+        if (request.requerimientosFuncionales() != null) {
+            for (RequerimientoFuncionalDto dto : request.requerimientosFuncionales()) {
+                RequerimientoFuncional rf = new RequerimientoFuncional();
+                rf.setProyecto(p);
+                rf.setCodigo(dto.codigo());
+                rf.setDescripcion(dto.descripcion());
+                p.getRequerimientosFuncionales().add(rf);
+            }
+        }
+
+        // Requerimientos no funcionales (1:N)
+        p.getRequerimientosNoFuncionales().clear();
+        if (request.requerimientosNoFuncionales() != null) {
+            for (RequerimientoNoFuncionalDto dto : request.requerimientosNoFuncionales()) {
+                RequerimientoNoFuncional rnf = new RequerimientoNoFuncional();
+                rnf.setProyecto(p);
+                rnf.setCodigo(dto.codigo());
+                rnf.setCategoria(dto.categoria());
+                rnf.setDescripcion(dto.descripcion());
+                p.getRequerimientosNoFuncionales().add(rnf);
+            }
+        }
+
+        // Casos de uso (1:N)
+        p.getCasosDeUso().clear();
+        if (request.casosDeUso() != null) {
+            for (CasoUsoDto dto : request.casosDeUso()) {
+                CasoUso cu = new CasoUso();
+                cu.setProyecto(p);
+                cu.setCodigo(dto.codigo());
+                cu.setNombre(dto.nombre());
+                cu.setDescripcion(dto.descripcion());
+                p.getCasosDeUso().add(cu);
+            }
+        }
+    }
+
     private ProyectoResponse aResponse(Proyecto p) {
         return new ProyectoResponse(
                 p.getId(),
@@ -178,7 +266,20 @@ public class ProyectoService {
                 p.getAlcance(),
                 p.getRestricciones(),
                 p.getFechaEntrega(),
-                p.getTipo());
+                p.getTipo(),
+                p.getTecnologias().stream()
+                        .sorted((a, b) -> Long.compare(a.getId(), b.getId()))
+                        .map(t -> new TecnologiaDto(t.getId(), t.getNombre()))
+                        .toList(),
+                p.getRequerimientosFuncionales().stream()
+                        .map(rf -> new RequerimientoFuncionalDto(rf.getDescripcion(), rf.getCodigo()))
+                        .toList(),
+                p.getRequerimientosNoFuncionales().stream()
+                        .map(rnf -> new RequerimientoNoFuncionalDto(rnf.getDescripcion(), rnf.getCodigo(), rnf.getCategoria()))
+                        .toList(),
+                p.getCasosDeUso().stream()
+                        .map(cu -> new CasoUsoDto(cu.getNombre(), cu.getCodigo(), cu.getDescripcion()))
+                        .toList());
     }
 
     private void verificarCreador(Usuario u, Long proyectoId) {
