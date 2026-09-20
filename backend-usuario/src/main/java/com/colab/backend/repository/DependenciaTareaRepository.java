@@ -12,4 +12,13 @@ public interface DependenciaTareaRepository extends JpaRepository<DependenciaTar
 
     @Query("select d from DependenciaTarea d where d.tarea.etapa.planificacion.id = :planificacionId")
     List<DependenciaTarea> findByPlanificacionId(@Param("planificacionId") Long planificacionId);
+
+    /** Predecesoras de una tarea (dependencias directas de la tarea). */
+    @Query("select d from DependenciaTarea d where d.tarea.id = :tareaId")
+    List<DependenciaTarea> findPredecesorasByTareaId(@Param("tareaId") Long tareaId);
+
+    /** Sucesoras de una tarea (tareas que dependen de ella). */
+    @Query("select d from DependenciaTarea d where d.tareaPredecesora.id = :tareaId")
+    List<DependenciaTarea> findSucesorasByTareaId(@Param("tareaId") Long tareaId);
 }
+
