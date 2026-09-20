@@ -46,4 +46,7 @@ public class Planificacion {
 
     @OneToMany(mappedBy = "planificacion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Etapa> etapas = new ArrayList<>();
+
+    @OneToMany(mappedBy = "planificacion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Confirmacion> confirmaciones = new ArrayList<>();
 }
