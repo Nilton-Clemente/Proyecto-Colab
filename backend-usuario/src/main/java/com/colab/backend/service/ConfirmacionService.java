@@ -35,15 +35,18 @@ public class ConfirmacionService {
     private final ConfirmacionRepository confirmacionRepository;
     private final IntegranteRepository integranteRepository;
     private final UsuarioRepository usuarioRepository;
+    private final NotificacionService notificacionService;
 
     public ConfirmacionService(PlanificacionRepository planificacionRepository,
                                ConfirmacionRepository confirmacionRepository,
                                IntegranteRepository integranteRepository,
-                               UsuarioRepository usuarioRepository) {
+                               UsuarioRepository usuarioRepository,
+                               NotificacionService notificacionService) {
         this.planificacionRepository = planificacionRepository;
         this.confirmacionRepository = confirmacionRepository;
         this.integranteRepository = integranteRepository;
         this.usuarioRepository = usuarioRepository;
+        this.notificacionService = notificacionService;
     }
 
     @Transactional
@@ -102,7 +105,12 @@ public class ConfirmacionService {
                 .toList();
         confirmacionRepository.deleteAll(otras);
 
-        // TODO(Fase 3 - notificaciones): notificar al Creador que se solicitaron cambios.
+        // RN-22: notificar al Creador que se solicitaron cambios.
+        Integrante creador = creadorDe(plan);
+        if (creador != null) {
+            notificacionService.crear(creador.getUsuario(), "PLANIFICACION",
+                    integrante.getUsuario().getNombre() + " solicitó cambios en la planificación: " + comentario);
+        }
 
         return aResponse(c);
     }
@@ -132,6 +140,12 @@ public class ConfirmacionService {
         if (todos) {
             plan.setEstado("ACTIVA");
             planificacionRepository.save(plan);
+
+            // RN-22: notificar a todos los integrantes que la planificación se activó.
+            for (Integrante i : conTareas) {
+                notificacionService.crear(i.getUsuario(), "PLANIFICACION",
+                        "La planificación del proyecto quedó ACTIVA.");
+            }
         }
     }
 
@@ -153,6 +167,14 @@ public class ConfirmacionService {
         return planificacionRepository.findByProyectoId(proyectoId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "El proyecto no tiene planificación"));
+    }
+
+    /** Devuelve el integrante con rol CREADOR de la planificación, o null. */
+    private Integrante creadorDe(Planificacion plan) {
+        return integranteRepository.findByProyectoId(plan.getProyecto().getId()).stream()
+                .filter(i -> "CREADOR".equals(i.getRol()))
+                .findFirst()
+                .orElse(null);
     }
 
     private Integrante integranteActivo(Usuario u, Long proyectoId) {

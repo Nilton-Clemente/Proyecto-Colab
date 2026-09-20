@@ -43,19 +43,22 @@ public class TareaService {
     private final UsuarioRepository usuarioRepository;
     private final PlanificacionRepository planificacionRepository;
     private final DependenciaTareaRepository dependenciaTareaRepository;
+    private final NotificacionService notificacionService;
 
     public TareaService(TareaRepository tareaRepository,
                         EtapaRepository etapaRepository,
                         IntegranteRepository integranteRepository,
                         UsuarioRepository usuarioRepository,
                         PlanificacionRepository planificacionRepository,
-                        DependenciaTareaRepository dependenciaTareaRepository) {
+                        DependenciaTareaRepository dependenciaTareaRepository,
+                        NotificacionService notificacionService) {
         this.tareaRepository = tareaRepository;
         this.etapaRepository = etapaRepository;
         this.integranteRepository = integranteRepository;
         this.usuarioRepository = usuarioRepository;
         this.planificacionRepository = planificacionRepository;
         this.dependenciaTareaRepository = dependenciaTareaRepository;
+        this.notificacionService = notificacionService;
     }
 
     /** RF-32 — Vista de todas las tareas del proyecto. */
@@ -94,6 +97,13 @@ public class TareaService {
         aplicarCampos(t, etapa, request);
         t.setEstado("PENDIENTE");
         tareaRepository.save(t);
+
+        // RN-22: notificar asignación de tarea al responsable.
+        if (t.getResponsable() != null) {
+            notificacionService.crear(t.getResponsable().getUsuario(), "ASIGNACION",
+                    "Se te asignó la tarea \"" + t.getNombre() + "\" en el proyecto \""
+                            + etapa.getPlanificacion().getProyecto().getNombre() + "\".");
+        }
         return aDetalle(t);
     }
 
@@ -141,6 +151,12 @@ public class TareaService {
             t.setResponsable(responsable);
         }
         tareaRepository.save(t);
+
+        // RN-22: notificar reasignación al nuevo responsable.
+        if (t.getResponsable() != null) {
+            notificacionService.crear(t.getResponsable().getUsuario(), "CAMBIO_RESPONSABLE",
+                    "Ahora eres responsable de la tarea \"" + t.getNombre() + "\".");
+        }
         return aDetalle(t);
     }
 
@@ -167,7 +183,12 @@ public class TareaService {
             desbloquearSucesoras(t);
         }
 
-        // TODO(Fase 3 - notificaciones): notificar cambios de estado.
+        // RN-22: notificar al Creador el cambio de estado.
+        Integrante creador = creadorDe(t.getEtapa().getPlanificacion().getProyecto().getId());
+        if (creador != null) {
+            notificacionService.crear(creador.getUsuario(), "CAMBIO_ESTADO",
+                    "La tarea \"" + t.getNombre() + "\" cambió de estado a " + estadoNormalizado + ".");
+        }
 
         return aDetalle(t);
     }
@@ -271,10 +292,15 @@ public class TareaService {
     private void desbloquearSucesoras(Tarea t) {
         List<Tarea> sucesoras = dependenciaTareaRepository.findSucesorasByTareaId(t.getId()).stream()
                 .map(DependenciaTarea::getTarea)
+                .filter(s -> "PENDIENTE".equals(s.getEstado()))
                 .toList();
         for (Tarea sucesora : sucesoras) {
-            if ("PENDIENTE".equals(sucesora.getEstado()) && !tieneDependenciasIncompletas(sucesora)) {
-                // BLOQUEADA es calculada; al quedar libre, sigue PENDIENTE (no hay nada que persistir).
+            if (!tieneDependenciasIncompletas(sucesora)) {
+                // RN-22: notificar desbloqueo al responsable de la tarea liberada.
+                if (sucesora.getResponsable() != null) {
+                    notificacionService.crear(sucesora.getResponsable().getUsuario(), "DESBLOQUEO",
+                            "La tarea \"" + sucesora.getNombre() + "\" quedó desbloqueada (sus dependencias se completaron).");
+                }
             }
         }
     }
@@ -337,6 +363,14 @@ public class TareaService {
                 .filter(i -> "CREADOR".equals(i.getRol()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
                         "Solo el Creador puede realizar esta acción"));
+    }
+
+    /** Devuelve el integrante con rol CREADOR del proyecto, o null si no existe. */
+    private Integrante creadorDe(Long proyectoId) {
+        return integranteRepository.findByProyectoId(proyectoId).stream()
+                .filter(i -> "CREADOR".equals(i.getRol()))
+                .findFirst()
+                .orElse(null);
     }
 
     /** RN-14/RN-15 — Creador puede cambiar cualquier tarea; integrante solo las suyas. */
