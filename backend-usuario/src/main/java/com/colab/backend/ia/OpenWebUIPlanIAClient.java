@@ -2,9 +2,12 @@ package com.colab.backend.ia;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 
+import java.net.http.HttpClient;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +30,16 @@ public class OpenWebUIPlanIAClient implements PlanIAClient {
         this.urlBase = urlBase == null ? "" : urlBase.replaceAll("/+$", "");
         this.apiKey = apiKey;
         this.model = model;
-        this.restClient = RestClient.create();
+        // Forzar HTTP/1.1: el HttpClient del JDK por defecto intenta negociar HTTP/2 (h2c)
+        // con cabeceras de upgrade, y el servidor de OpenWebUI (uvicorn) rechaza esa
+        // petición con "Invalid HTTP request received".
+        HttpClient httpClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofSeconds(30))
+                .build();
+        this.restClient = RestClient.builder()
+                .requestFactory(new JdkClientHttpRequestFactory(httpClient))
+                .build();
     }
 
     @Override
