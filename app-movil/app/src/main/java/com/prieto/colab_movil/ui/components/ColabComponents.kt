@@ -28,6 +28,7 @@ fun TopBarColab() {
         modifier = Modifier
             .fillMaxWidth()
             .background(DarkHeaderBg)
+            .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
