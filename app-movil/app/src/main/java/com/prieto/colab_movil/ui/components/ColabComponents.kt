@@ -251,6 +251,26 @@ fun SeccionEtapa(etapa: EtapaProyecto) {
 }
 
 @Composable
+fun BotonGestionarTodasLasTareas(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        TextButton(
+            onClick = onClick,
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+        ) {
+            Text(
+                text = "Gestionar todas las tareas  →",
+                color = PurpleColab,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
 fun BottomNavColab() {
     NavigationBar(containerColor = Color.White) {
         NavigationBarItem(
