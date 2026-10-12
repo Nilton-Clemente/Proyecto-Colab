@@ -4,14 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
-import com.prieto.colab_movil.ui.screens.ColabScreen
+import com.prieto.colab_movil.ui.navigation.ColabApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                ColabScreen()
+                ColabApp()
             }
         }
     }
