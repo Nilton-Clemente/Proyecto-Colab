@@ -45,6 +45,9 @@ function Api($metodo, $ruta, $body = $null) {
         $status = $null
         if ($_.Exception.Response) { $status = $_.Exception.Response.StatusCode.value__ }
         Write-Host "  [ERROR $status] $($_.Exception.Message)" -ForegroundColor Red
+        if ($_.ErrorDetails -and $_.ErrorDetails.Message) {
+            Write-Host "  Detalle: $($_.ErrorDetails.Message)" -ForegroundColor Yellow
+        }
         return $null
     }
 }
@@ -66,6 +69,9 @@ function ApiSinCuerpo($metodo, $ruta, $body = $null) {
         $status = $null
         if ($_.Exception.Response) { $status = $_.Exception.Response.StatusCode.value__ }
         Write-Host "  [ERROR $status] $($_.Exception.Message)" -ForegroundColor Red
+        if ($_.ErrorDetails -and $_.ErrorDetails.Message) {
+            Write-Host "  Detalle: $($_.ErrorDetails.Message)" -ForegroundColor Yellow
+        }
         return $false
     }
 }
@@ -114,13 +120,22 @@ function ListarProyectos {
     foreach ($p in @($r)) { Write-Host ("  [{0}] {1}" -f $p.id, $p.nombre) -ForegroundColor Green }
 }
 
+function LeerConDefault($prompt, $default) {
+    $val = Read-Host "$prompt [$default]"
+    if ([string]::IsNullOrWhiteSpace($val)) { return $default }
+    return $val
+}
+
 function CrearProyecto {
-    $nombre   = Read-Host "Nombre"
-    $objetivo = Read-Host "Objetivo general"
-    $fecha    = Read-Host "Fecha de entrega (YYYY-MM-DD)"
-    $tec      = Read-Host "Tecnologias (IDs separados por coma, ej: 1,5)"
-    if (-not $tec) { Write-Host "  Tecnologias requeridas." -ForegroundColor Yellow; return }
-    $rfsTxt = Read-Host "Requerimientos funcionales (separados por ';')"
+    Write-Host "  (deja el campo vacio y pulsa Enter para usar el valor por defecto)" -ForegroundColor DarkGray
+    $nombre   = LeerConDefault "Nombre" "Proyecto Colab Demo"
+    $objetivo = LeerConDefault "Objetivo general" "Desarrollar una plataforma de colaboracion estudiantil para la gestion de proyectos academicos"
+    $fecha    = LeerConDefault "Fecha de entrega (YYYY-MM-DD)" ((Get-Date).AddDays(60).ToString("yyyy-MM-dd"))
+
+    Write-Host "  Catalogo: 1 Java, 2 Spring Boot, 3 Kotlin, 4 Jetpack Compose, 5 React, 6 Django, 7 Python, 8 PostgreSQL, 9 Flutter, 10 Node.js" -ForegroundColor DarkGray
+    $tec = LeerConDefault "Tecnologias (IDs separados por coma)" "1,2,8"
+
+    $rfsTxt = LeerConDefault "Requerimientos funcionales (separados por ';')" "Registro e inicio de sesion de usuarios;Gestion de proyectos;Generacion de planificacion con IA;Gestion de tareas"
 
     $tecIds = @($tec -split "," | ForEach-Object { [int]$_.Trim() })
     $rfs = @()
@@ -213,6 +228,17 @@ function AceptarInvitacion {
     }
 }
 
+function AbrirTareasWeb([string]$tab) {
+    if (-not $script:Token) { Write-Host "  Primero inicia sesion (opcion 2)." -ForegroundColor Yellow; return }
+    $id = Read-Host "ID del proyecto"
+    if (-not $id) { Write-Host "  ID requerido." -ForegroundColor Yellow; return }
+
+    # La interfaz se sirve desde el backend (mismo origen), evitando problemas de CORS/file://.
+    $url = "$BaseUrl/web-tareas.html?token=$($script:Token)&proyectoId=$id&tab=$tab"
+    Start-Process $url
+    Write-Host "  [OK] Interfaz web abierta en el navegador (pestana: $tab)." -ForegroundColor Green
+}
+
 # ---------- menu principal ----------
 
 function MostrarMenu {
@@ -244,6 +270,9 @@ function MostrarMenu {
     Write-Host "  15. Invitar integrante a un proyecto"
     Write-Host "  16. Aceptar invitacion"
     Write-Host "  ------------------------------"
+    Write-Host "  17. Ver tareas (interfaz web)"
+    Write-Host "  18. Gestionar tareas (interfaz web)"
+    Write-Host "  ------------------------------"
     Write-Host "  0. Salir"
     Write-Host ""
 }
@@ -268,6 +297,8 @@ do {
         "14" { ListarTareas }
         "15" { InvitarIntegrante }
         "16" { AceptarInvitacion }
+        "17" { AbrirTareasWeb "visualizacion" }
+        "18" { AbrirTareasWeb "gestion" }
         "0"  { Write-Host "Hasta luego."; break }
         default { Write-Host "  Opcion no valida." -ForegroundColor Red }
     }

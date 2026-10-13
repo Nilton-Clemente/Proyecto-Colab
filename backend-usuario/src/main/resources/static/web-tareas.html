@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Colab - Proyecto Sistema Colab v1.0 (Ingeniería de Software II)</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons (Phosphor) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+
+    <style>
+        :root {
+            --color-primary: #0f7bff;
+            --color-primary-600: #0b63d6;
+            --color-primary-50: #eef5ff;
+            --color-bg: #f4f6fb;
+            --color-surface: #ffffff;
+            --color-text-primary: #17233b;
+            --color-text-secondary: #475569;
+            --color-text-muted: #8a94a6;
+            --color-border: #e4e9f2;
+            --color-border-light: #eef2f7;
+
+            --color-pendiente: #f59e0b;
+            --color-pendiente-bg: #fff7ed;
+            --color-progreso: #0f7bff;
+            --color-progreso-bg: #eff6ff;
+            --color-completada: #10b981;
+            --color-completada-bg: #ecfdf5;
+            --color-bloqueada: #ef4444;
+            --color-bloqueada-bg: #fef2f2;
+
+            --color-alta: #ef4444;
+            --color-alta-bg: #fef2f2;
+            --color-media: #f59e0b;
+            --color-media-bg: #fff7ed;
+            --color-baja: #10b981;
+            --color-baja-bg: #ecfdf5;
+
+            --shadow-sm: 0 1px 2px 0 rgba(23, 35, 59, 0.06);
+            --shadow-md: 0 4px 12px -2px rgba(23, 35, 59, 0.10);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button { font-family: inherit; cursor: pointer; border: none; background: none; }
+        ul { list-style: none; }
+
+        /* ============ HEADER SUPERIOR ============ */
+        .top-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: #fff;
+            border-bottom: 1px solid var(--color-border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .top-header-inner {
+            max-width: 1460px;
+            margin: 0 auto;
+            padding: 0.65rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+        .brand-logo {
+            width: 34px; height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #0f7bff 0%, #3b9bff 100%);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 1.1rem;
+            box-shadow: 0 6px 16px -8px rgba(15, 123, 255, 0.9);
+        }
+        .brand-name { font-weight: 800; font-size: 1.05rem; }
+
+        .project-pill {
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+            background: #f1f5f9;
+            border: 1px solid var(--color-border-light);
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 420px;
+        }
+
+        .header-tabs {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin: 0 auto;
+            background: #f1f5f9;
+            border-radius: 999px;
+            padding: 0.25rem;
+        }
+
+        .tab-btn {
+            padding: 0.45rem 1.1rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { color: var(--color-text-primary); }
+        .tab-btn.active { background: var(--color-primary); color: #fff; box-shadow: var(--shadow-sm); }
+
+        .header-user { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; text-align: right; }
+        .header-user .u-text { display: flex; flex-direction: column; line-height: 1.25; }
+        .header-user .u-name { font-weight: 700; font-size: 0.85rem; }
+        .header-user .u-role { font-size: 0.72rem; color: var(--color-text-muted); }
+        .avatar {
+            width: 34px; height: 34px; border-radius: 999px;
+            background: linear-gradient(135deg, #0f7bff, #7c3aed);
+            color: #fff; font-weight: 700; font-size: 0.8rem;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* ============ CONTENIDO ============ */
+        .page { max-width: 1460px; margin: 0 auto; padding: 1.5rem 1.5rem 2.5rem; display: flex; flex-direction: column; gap: 1.1rem; }
+
+        .title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+        .page-title { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; }
+        .page-subtitle { font-size: 0.88rem; color: var(--color-text-secondary); margin-top: 0.2rem; max-width: 760px; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+            padding: 0.55rem 1rem; border-radius: var(--radius-md);
+            font-weight: 600; font-size: 0.88rem; line-height: 1.2;
+            border: 1px solid transparent; transition: all 0.15s ease; white-space: nowrap;
+        }
+        .btn-primary { background: var(--color-primary); color: #fff; box-shadow: 0 8px 20px -12px rgba(15,123,255,0.9); }
+        .btn-primary:hover { background: var(--color-primary-600); transform: translateY(-1px); }
+        .btn-outline { background: #fff; color: var(--color-text-primary); border-color: var(--color-border); }
+        .btn-outline:hover { background: #f8fafc; }
+        .btn-soft { background: var(--color-primary-50); color: var(--color-primary); }
+        .btn-soft:hover { background: rgba(15,123,255,0.14); }
+        .btn-danger-soft { background: rgba(239,68,68,0.08); color: #b91c1c; }
+        .btn-danger-soft:hover { background: rgba(239,68,68,0.14); }
+        .btn-sm { padding: 0.375rem 0.625rem; font-size: 0.82rem; }
+        .btn-xs { padding: 0.25rem 0.5rem; font-size: 0.78rem; }
+
+        /* ============ BARRA DE FILTROS ============ */
+        .filter-card {
+            background: #fff; border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+            padding: 0.7rem 0.9rem;
+            display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; flex-wrap: wrap;
+        }
+        .scope-tabs { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+        .scope-btn {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.42rem 0.8rem; border-radius: var(--radius-md);
+            font-size: 0.82rem; font-weight: 600; color: var(--color-text-secondary);
+            background: #f1f5f9; border: 1px solid transparent;
+            transition: all 0.15s ease;
+        }
+        .scope-btn:hover { background: #e8eef6; }
+        .scope-btn.active { background: var(--color-primary); color: #fff; }
+        .search-box {
+            display: flex; align-items: center; gap: 0.5rem;
+            background: #f8fafc; border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: 0.42rem 0.6rem 0.42rem 0.7rem;
+            min-width: min(360px, 90vw); color: var(--color-text-muted);
+        }
+        .search-box:focus-within { border-color: rgba(15,123,255,0.5); box-shadow: 0 0 0 3px rgba(15,123,255,0.12); }
+        .search-box input { border: none; background: transparent; outline: none; font-size: 0.85rem; width: 100%; color: var(--color-text-primary); font-family: inherit; }
+
+        /* ============ TIRA DE ESTADÍSTICAS ============ */
+        .stats-strip {
+            background: #fff; border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+            padding: 0.7rem 0.9rem;
+            display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+        }
+        .stat-chip {
+            display: inline-flex; align-items: center; gap: 0.45rem;
+            font-size: 0.8rem; color: var(--color-text-secondary); font-weight: 500;
+            background: #f8fafc; border: 1px solid var(--color-border-light);
+            border-radius: var(--radius-md); padding: 0.35rem 0.65rem;
+        }
+        .stat-chip i { font-size: 0.95rem; }
+        .stat-chip strong { color: var(--color-text-primary); font-weight: 700; }
+        .stat-dot { width: 8px; height: 8px; border-radius: 999px; display: inline-block; }
+        .progress-wrap { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; font-size: 0.8rem; color: var(--color-text-secondary); font-weight: 600; }
+        .progress-track { width: 130px; height: 8px; border-radius: 999px; background: #e8eef6; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #0f7bff, #10b981); transition: width 0.3s ease; }
+
+        /* ============ ETAPAS ============ */
+        .etapa-block { display: flex; flex-direction: column; gap: 0.7rem; }
+        .etapa-header {
+            display: flex; align-items: flex-start; justify-content: space-between; gap: 0.8rem; flex-wrap: wrap;
+            padding-top: 0.4rem;
+        }
+        .etapa-left { display: flex; align-items: flex-start; gap: 0.6rem; min-width: 0; }
+        .etapa-num {
+            width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
+            background: var(--color-primary-50); color: var(--color-primary);
+            font-weight: 800; font-size: 0.82rem;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(15,123,255,0.2); margin-top: 0.1rem;
+        }
+        .etapa-title { font-weight: 700; font-size: 0.98rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .etapa-desc { font-size: 0.8rem; color: var(--color-text-muted); }
+        .etapa-count { font-size: 0.78rem; color: var(--color-text-muted); background: #fff; border: 1px solid var(--color-border); border-radius: 999px; padding: 0.2rem 0.65rem; font-weight: 600; white-space: nowrap; }
+
+        .etapa-pill { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.03em; padding: 0.18rem 0.55rem; border-radius: 999px; border: 1px solid transparent; white-space: nowrap; }
+        .etapa-pill.ok { background: var(--color-completada-bg); color: #047857; border-color: rgba(16,185,129,0.3); }
+        .etapa-pill.warn { background: #fef2f2; color: #b91c1c; border-color: rgba(239,68,68,0.3); }
+        .etapa-pill.info { background: var(--color-progreso-bg); color: #1d4ed8; border-color: rgba(15,123,255,0.3); }
+        .etapa-pill.idle { background: #f1f5f9; color: #64748b; border-color: #e2e8f0; }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 0.9rem;
+        }
+        .cards-grid.drop-hover { outline: 2px dashed rgba(15,123,255,0.5); outline-offset: 6px; border-radius: var(--radius-lg); }
+
+        /* ============ TARJETA DE TAREA ============ */
+        .task-card {
+            background: #fff; border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+            padding: 0.9rem 1rem; display: flex; flex-direction: column; gap: 0.55rem;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border 0.15s ease;
+            cursor: grab; position: relative;
+        }
+        .task-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: rgba(15,123,255,0.3); }
+        .task-card:active { cursor: grabbing; }
+        .task-card.dragging { opacity: 0.5; }
+        .task-card.is-blocked { background: #fffafa; }
+
+        .card-top { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; }
+        .card-code { font-size: 0.72rem; font-weight: 700; color: var(--color-text-muted); }
+        .card-actions { margin-left: auto; display: flex; gap: 0.15rem; opacity: 0; transition: opacity 0.15s ease; }
+        .task-card:hover .card-actions, .task-card:focus-within .card-actions { opacity: 1; }
+
+        .icon-btn {
+            display: flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: var(--radius-md);
+            color: var(--color-text-muted); transition: background 0.15s ease, color 0.15s ease;
+        }
+        .icon-btn:hover { background: rgba(23,35,59,0.06); color: var(--color-text-primary); }
+        .icon-btn.danger:hover { background: rgba(239,68,68,0.1); color: #b91c1c; }
+
+        .badge {
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            padding: 0.14rem 0.5rem; border-radius: 999px;
+            font-size: 0.68rem; font-weight: 700; line-height: 1.3;
+            border: 1px solid transparent; white-space: nowrap;
+        }
+        .badge-alta { background: var(--color-alta-bg); color: #b91c1c; border-color: rgba(239,68,68,0.3); }
+        .badge-media { background: var(--color-media-bg); color: #b45309; border-color: rgba(245,158,11,0.3); }
+        .badge-baja { background: var(--color-baja-bg); color: #047857; border-color: rgba(16,185,129,0.3); }
+        .badge-pendiente { background: var(--color-pendiente-bg); color: #b45309; border-color: rgba(245,158,11,0.3); }
+        .badge-en_progreso, .badge-enprogreso { background: var(--color-progreso-bg); color: #1d4ed8; border-color: rgba(15,123,255,0.3); }
+        .badge-completada { background: var(--color-completada-bg); color: #047857; border-color: rgba(16,185,129,0.3); }
+        .badge-bloqueada { background: var(--color-bloqueada-bg); color: #b91c1c; border-color: rgba(239,68,68,0.35); }
+
+        .card-title { font-weight: 700; font-size: 0.92rem; line-height: 1.35; }
+        .card-desc { font-size: 0.82rem; color: var(--color-text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        .card-dates { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; font-size: 0.76rem; color: var(--color-text-muted); }
+        .card-dates .d-range { display: inline-flex; align-items: center; gap: 0.35rem; }
+        .days-pill { background: #f1f5f9; border: 1px solid var(--color-border-light); border-radius: 999px; padding: 0.12rem 0.55rem; font-weight: 700; color: var(--color-text-secondary); font-size: 0.72rem; white-space: nowrap; }
+
+        .dep-box { border-radius: var(--radius-md); padding: 0.45rem 0.6rem; font-size: 0.74rem; line-height: 1.45; }
+        .dep-box .dep-label { font-weight: 800; font-size: 0.66rem; letter-spacing: 0.04em; display: block; margin-bottom: 0.1rem; }
+        .dep-box.ok { background: var(--color-completada-bg); color: #047857; border: 1px solid rgba(16,185,129,0.25); }
+        .dep-box.bad { background: var(--color-bloqueada-bg); color: #b91c1c; border: 1px solid rgba(239,68,68,0.25); }
+        .dep-box.neutral { background: #f8fafc; color: var(--color-text-secondary); border: 1px solid var(--color-border-light); }
+
+        .card-footer { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--color-border); }
+        .resp { display: flex; align-items: center; gap: 0.45rem; min-width: 0; font-size: 0.78rem; font-weight: 600; }
+        .resp span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .avatar-sm { width: 26px; height: 26px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 800; color: #fff; flex-shrink: 0; }
+        .resp-role { font-size: 0.72rem; color: var(--color-text-muted); font-weight: 500; white-space: nowrap; }
+
+        /* ============ NOTA MODO LECTURA ============ */
+        .readonly-bar {
+            background: #fff; border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+            padding: 0.8rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; flex-wrap: wrap;
+        }
+        .readonly-text { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.8rem; color: var(--color-text-secondary); max-width: 820px; }
+        .readonly-text i { color: var(--color-primary); font-size: 1.05rem; margin-top: 0.1rem; }
+        .readonly-text strong { color: var(--color-text-primary); }
+
+        /* ============ GESTIÓN / TABLA ============ */
+        .tab-content { display: none; flex-direction: column; gap: 1.1rem; }
+        .tab-content.active { display: flex; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        .table-card { background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; display: flex; flex-direction: column; }
+        .table-wrapper { overflow: auto; max-height: calc(100vh - 260px); }
+        .table { width: 100%; border-collapse: collapse; min-width: 980px; }
+        .table thead { position: sticky; top: 0; z-index: 5; background: #f8fafc; }
+        .table th { text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; color: var(--color-text-muted); padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--color-border); }
+        .table tbody tr { transition: background 0.12s ease; }
+        .table tbody tr:hover { background: #fafbff; }
+        .table td { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--color-border-light); vertical-align: top; font-size: 0.85rem; }
+        .table tbody tr.is-blocked td { background: #fffafa; }
+        .help-text { font-size: 0.78rem; color: var(--color-text-muted); }
+        .flex-center { display: flex; align-items: center; gap: 0.45rem; }
+
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 1rem; gap: 0.5rem; color: var(--color-text-muted); }
+        .empty-state h3 { color: var(--color-text-primary); }
+
+        .select {
+            appearance: none;
+            background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 256 256'%3E%3Cpath fill='%236b7280' d='M208.49 96.49a12 12 0 0 1 0 17l-80 80a12 12 0 0 1-17 0l-80-80a12 12 0 1 1 17-17L128 159l71.51-71.52a12 12 0 0 1 16.98.01Z'/%3E%3C/svg%3E") no-repeat right 0.625rem center/1rem;
+            border: 1px solid var(--color-border); border-radius: var(--radius-md);
+            padding: 0.5rem 2rem 0.5rem 0.75rem; font-size: 0.85rem; color: var(--color-text-primary); font-family: inherit;
+        }
+        .select:focus { outline: none; border-color: rgba(15,123,255,0.5); box-shadow: 0 0 0 3px rgba(15,123,255,0.12); }
+
+        /* ============ MODAL ============ */
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(23,35,59,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 1rem; z-index: 1000; }
+        .modal-backdrop.show { display: flex; }
+        .modal { background: #fff; border-radius: var(--radius-xl); box-shadow: 0 20px 60px -20px rgba(23,35,59,0.4); width: min(960px, 96vw); max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; }
+        .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--color-border); }
+        .modal-title { font-size: 1.25rem; font-weight: 800; }
+        .modal-subtitle { color: var(--color-text-muted); font-size: 0.85rem; }
+        .modal-body { padding: 1.25rem 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.25rem; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+        .form-field { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-field.full { grid-column: 1 / -1; }
+        .label { font-weight: 600; font-size: 0.88rem; }
+        .input, .textarea { border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 0.6rem 0.75rem; font-size: 0.9rem; color: var(--color-text-primary); background: #fff; font-family: inherit; }
+        .input:focus, .textarea:focus { outline: none; border-color: rgba(15,123,255,0.5); box-shadow: 0 0 0 3px rgba(15,123,255,0.12); }
+        .textarea { min-height: 90px; resize: vertical; line-height: 1.6; }
+        .section-title { font-size: 1rem; font-weight: 700; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 0.3rem; max-height: 240px; overflow-y: auto; padding: 0.4rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #f8fafc; }
+        .checkbox-item { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.45rem 0.55rem; border-radius: var(--radius-md); }
+        .checkbox-item:hover { background: rgba(23,35,59,0.05); }
+        .checkbox-item input { margin-top: 0.25rem; }
+        .checkbox-text { display: flex; flex-direction: column; }
+        .checkbox-title { font-weight: 600; font-size: 0.86rem; }
+        .checkbox-sub { font-size: 0.78rem; color: var(--color-text-muted); }
+        .modal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; padding: 1rem 1.5rem; border-top: 1px solid var(--color-border); background: #f8fafc; }
+
+        @media (max-width: 1024px) {
+            .project-pill { display: none; }
+            .header-tabs { margin: 0; }
+        }
+        @media (max-width: 768px) {
+            .top-header-inner { flex-wrap: wrap; }
+            .header-tabs { order: 3; width: 100%; }
+            .tab-btn { flex: 1; text-align: center; }
+            .title-row { flex-direction: column; align-items: flex-start; }
+            .progress-wrap { margin-left: 0; }
+            .search-box { min-width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ======= HEADER SUPERIOR (sin sidebar) ======= -->
+    <header class="top-header">
+        <div class="top-header-inner">
+            <div class="brand">
+                <div class="brand-logo"><i class="ph ph-briefcase-fill"></i></div>
+                <span class="brand-name">Colab</span>
+            </div>
+            <span class="project-pill">Proyecto: Sistema Colab v1.0 (Ingeniería de Software II)</span>
+            <nav class="header-tabs">
+                <button class="tab-btn active" data-tab="visualizacion">Visualización de tareas</button>
+                <button class="tab-btn" data-tab="gestion">Gestión de tareas</button>
+            </nav>
+            <div class="header-user">
+                <div class="u-text">
+                    <span class="u-name" id="userNombre">Ana Pérez</span>
+                    <span class="u-role">Estudiante</span>
+                </div>
+                <div class="avatar" id="avatarInicial">AP</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="page">
+        <!-- ======= VISUALIZACIÓN ======= -->
+        <section class="tab-content active" data-content="visualizacion">
+            <div class="title-row">
+                <div>
+                    <h1 class="page-title">Visualización de tareas</h1>
+                    <p class="page-subtitle">Planificación y estado del proyecto académico de software: "Proyecto Colab – Sistema de Colaboración Estudiantil".</p>
+                </div>
+                <button class="btn btn-primary" id="btnIrGestion">
+                    <span>Ir a Gestión de tareas</span>
+                    <i class="ph ph-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="filter-card">
+                <div class="scope-tabs">
+                    <button class="scope-btn active" id="scopeTodas"><i class="ph ph-list-checks"></i> Todas las tareas <span id="scopeTodasCount"></span></button>
+                    <button class="scope-btn" id="scopeMias"><i class="ph ph-user"></i> Mis tareas (Ana Pérez)</button>
+                    <button class="btn btn-sm btn-outline" id="btnLimpiarFiltros" title="Limpiar filtros"><i class="ph ph-funnel-x"></i> Limpiar</button>
+                </div>
+                <div class="search-box">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" id="searchTareas" placeholder="Buscar por título, código (#101) o responsable..." />
+                </div>
+            </div>
+
+            <div class="stats-strip" id="statsStrip"></div>
+
+            <div id="etapasBoard" style="display:flex;flex-direction:column;gap:1.4rem"></div>
+
+            <div class="readonly-bar">
+                <div class="readonly-text">
+                    <i class="ph ph-info"></i>
+                    <p><strong>Modo lectura activo</strong> — Esta vista es únicamente informativa. Para crear nuevas tareas, registrar estimaciones o realizar transiciones de estado, accede a la interfaz de gestión.</p>
+                </div>
+                <button class="btn btn-soft" id="btnAccederGestion">Acceder a Gestión de tareas <i class="ph ph-arrow-right"></i></button>
+            </div>
+        </section>
+
+        <!-- ======= GESTIÓN ======= -->
+        <section class="tab-content" data-content="gestion">
+            <div class="title-row">
+                <div>
+                    <h1 class="page-title">Gestión de tareas</h1>
+                    <p class="page-subtitle">Crea, edita, cambia estados y administra dependencias de las unidades de trabajo del proyecto.</p>
+                </div>
+                <div class="flex-center">
+                    <button class="btn btn-outline" id="btnVolverViz"><i class="ph ph-arrow-left"></i> Volver a Visualización</button>
+                    <button class="btn btn-primary" id="btnNuevaTarea"><i class="ph ph-plus"></i> Nueva tarea</button>
+                </div>
+            </div>
+
+            <div class="filter-card">
+                <div class="scope-tabs">
+                    <select class="select" id="filtroEtapaGestion">
+                        <option value="todas">Todas las etapas</option>
+                    </select>
+                    <select class="select" id="filtroEstadoGestion">
+                        <option value="todos">Todos los estados</option>
+                        <option value="PENDIENTE">Pendiente</option>
+                        <option value="EN_PROGRESO">En Progreso</option>
+                        <option value="COMPLETADA">Completada</option>
+                        <option value="BLOQUEADA">Bloqueada</option>
+                    </select>
+                </div>
+                <div class="search-box">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" id="searchGestion" placeholder="Buscar por código, título o responsable..." />
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-wrapper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Orden / Tarea</th>
+                                <th>Etapa</th>
+                                <th>Responsable</th>
+                                <th>Prioridad</th>
+                                <th>Estado</th>
+                                <th>Fechas</th>
+                                <th>Días</th>
+                                <th>Dependencias</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyGestion"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state" id="emptyGestion" style="display:none">
+                    <i class="ph ph-clipboard" style="font-size:3rem;color:#cbd5e1"></i>
+                    <h3>No hay tareas para gestionar</h3>
+                    <p>Haz clic en "Nueva tarea" para crear la primera.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ======= MODAL TAREA ======= -->
+    <div class="modal-backdrop" id="modalTarea">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+            <header class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="modalTitulo">Nueva Tarea</h3>
+                    <p class="modal-subtitle">Completa los datos para crear o editar la tarea.</p>
+                </div>
+                <button class="icon-btn" id="btnCerrarModal" title="Cerrar"><i class="ph ph-x" style="font-size:1.25rem"></i></button>
+            </header>
+            <form id="formTarea">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-field full">
+                            <label class="label" for="inputNombre">Nombre de la tarea *</label>
+                            <input type="text" id="inputNombre" class="input" placeholder="Ej. Definir requerimientos funcionales" required />
+                        </div>
+                        <div class="form-field full">
+                            <label class="label" for="inputDescripcion">Descripción</label>
+                            <textarea id="inputDescripcion" class="textarea" placeholder="Describe qué se debe realizar, criterios de aceptación, etc."></textarea>
+                        </div>
+                        <div class="form-field">
+                            <label class="label" for="selectEtapa">Etapa *</label>
+                            <select class="select" id="selectEtapa" required></select>
+                            <p class="help-text">Organiza la tarea dentro de una etapa de la planificación.</p>
+                        </div>
+                        <div class="form-field">
+                            <label class="label" for="selectResponsable">Responsable</label>
+                            <select class="select" id="selectResponsable"><option value="">Sin asignar</option></select>
+                            <p class="help-text">Puede asignarse ahora o dejarse pendiente.</p>
+                        </div>
+                        <div class="form-field">
+                            <label class="label" for="selectPrioridad">Prioridad *</label>
+                            <select class="select" id="selectPrioridad" required>
+                                <option value="ALTA">Alta</option>
+                                <option value="MEDIA" selected>Media</option>
+                                <option value="BAJA">Baja</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label class="label" for="selectEstado">Estado *</label>
+                            <select class="select" id="selectEstado" required>
+                                <option value="PENDIENTE">Pendiente</option>
+                                <option value="EN_PROGRESO">En Progreso</option>
+                                <option value="COMPLETADA">Completada</option>
+                                <option value="BLOQUEADA" disabled>Bloqueada (calculado automáticamente)</option>
+                            </select>
+                            <p class="help-text">El estado <strong>Bloqueada</strong> se calcula según dependencias incompletas.</p>
+                        </div>
+                        <div class="form-field">
+                            <label class="label" for="inputFechaInicio">Fecha de Inicio</label>
+                            <input type="date" id="inputFechaInicio" class="input" />
+                        </div>
+                        <div class="form-field">
+                            <label class="label" for="inputFechaFin">Fecha de Fin</label>
+                            <input type="date" id="inputFechaFin" class="input" />
+                        </div>
+                        <div class="form-field">
+                            <label class="label" for="inputDuracion">Duración (días) *</label>
+                            <input type="number" id="inputDuracion" class="input" min="1" step="1" value="1" required />
+                            <p class="help-text">Debe ser mayor a 0.</p>
+                        </div>
+                    </div>
+                    <div class="form-field full">
+                        <label class="label">Dependencias (Finish-to-Start)</label>
+                        <p class="help-text">Selecciona las tareas predecesoras. No se permiten ciclos. Una tarea con dependencias incompletas quedará <strong>Bloqueada</strong> automáticamente.</p>
+                        <div class="checkbox-group" id="dependenciasGroup"></div>
+                    </div>
+                </div>
+                <footer class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="btnCancelarModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary"><i class="ph ph-floppy-disk"></i> <span id="btnGuardarTexto">Guardar Tarea</span></button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const LS_KEY = "colab_tareas_v1";
+
+        // ===== Conexion con el backend (datos dinamicos) =====
+        const API_BASE = "http://localhost:8081";
+        const MODO_SOLO_VISUALIZACION = true;
+
+        function leerParams() {
+            const q = new URLSearchParams(window.location.search);
+            return {
+                token: q.get("token") || "",
+                proyectoId: q.get("proyectoId") || "",
+                tab: q.get("tab") || "visualizacion"
+            };
+        }
+        const CONFIG = leerParams();
+
+        function avisoNoDisponible() {
+            alert("Accion no disponible por ahora (modo visualizacion). Las tareas solo se muestran en modo lectura.");
+        }
+
+        async function apiFetch(ruta) {
+            const resp = await fetch(API_BASE + ruta, {
+                headers: { "Authorization": "Bearer " + CONFIG.token }
+            });
+            if (!resp.ok) {
+                throw new Error("HTTP " + resp.status + " en " + ruta);
+            }
+            return resp.json();
+        }
+
+        function mapearTarea(t) {
+            return {
+                id: t.id,
+                codigo: (t.orden != null ? t.orden : t.id),
+                nombre: t.nombre,
+                descripcion: t.descripcion,
+                etapaId: t.etapaId,
+                etapaNombre: t.etapaNombre,
+                responsableId: t.responsableId,
+                prioridad: t.prioridad,
+                estado: t.estado,
+                duracionDias: t.duracionDias,
+                fechaInicio: t.fechaInicio,
+                fechaFin: t.fechaFin,
+                orden: t.orden,
+                dependencias: t.dependencias || []
+            };
+        }
+
+        function derivarEtapas(tareas) {
+            const map = {};
+            tareas.forEach(function (t) {
+                const key = t.etapaId;
+                if (map[key] == null) {
+                    map[key] = { id: t.etapaId, nombre: t.etapaNombre || ("Etapa " + t.etapaId), orden: t.orden || 999999 };
+                } else {
+                    if ((t.orden || 999999) < map[key].orden) { map[key].orden = t.orden; }
+                }
+            });
+            return Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
+        }
+
+        async function cargarDatos() {
+            const [tareasResp, integrantesResp] = await Promise.all([
+                apiFetch("/api/proyectos/" + CONFIG.proyectoId + "/tareas"),
+                apiFetch("/api/proyectos/" + CONFIG.proyectoId + "/integrantes")
+            ]);
+            state.integrantes = (integrantesResp || []).map(function (i) {
+                return { id: i.integranteId, nombre: i.nombre, email: i.email, rol: i.rol };
+            });
+            state.tareas = (tareasResp || []).map(mapearTarea);
+            state.etapas = derivarEtapas(state.tareas);
+            state.proyecto = { id: Number(CONFIG.proyectoId), nombre: "Proyecto #" + CONFIG.proyectoId };
+        }
+
+        const AVATAR_GRADIENTS = [
+            "linear-gradient(135deg,#0f7bff,#7c3aed)",
+            "linear-gradient(135deg,#f59e0b,#ef4444)",
+            "linear-gradient(135deg,#10b981,#0f7bff)",
+            "linear-gradient(135deg,#ec4899,#8b5cf6)"
+        ];
+        function avatarBg(id) {
+            const n = String(id || "").split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+            return AVATAR_GRADIENTS[n % AVATAR_GRADIENTS.length];
+        }
+
+        const defaultData = {
+            proyecto: { id: 1, nombre: "Proyecto Colab - Sistema de Colaboración Estudiantil" },
+            integrantes: [
+                { id: 1, nombre: "Ana Pérez", email: "ana.perez@tecsup.edu.pe", rol: "CREADOR" },
+                { id: 2, nombre: "Luis Mendoza", email: "luis.mendoza@tecsup.edu.pe", rol: "INTEGRANTE" },
+                { id: 3, nombre: "María Rojas", email: "maria.rojas@tecsup.edu.pe", rol: "INTEGRANTE" }
+            ],
+            etapas: [
+                { id: 1, nombre: "Análisis", orden: 1, descripcion: "Levantamiento de requerimientos y alcance del sistema." },
+                { id: 2, nombre: "Diseño", orden: 2, descripcion: "Especificación técnica, prototipo de experiencia y arquitectura de datos." },
+                { id: 3, nombre: "Desarrollo", orden: 3, descripcion: "Construcción de componentes visuales, servicios REST e integraciones." },
+                { id: 4, nombre: "Pruebas", orden: 4, descripcion: "Validación funcional, tests unitarios automatizados y heurísticas de usuario." }
+            ],
+            tareas: [],
+            notificaciones: 0
+        };
+
+        const ROL_LABEL = { CREADOR: "Líder Proyecto", INTEGRANTE: "Miembro Equipo" };
+
+        function loadData() {
+            try {
+                const raw = localStorage.getItem(LS_KEY);
+                if (!raw) return JSON.parse(JSON.stringify(defaultData));
+                const parsed = JSON.parse(raw);
+                return {
+                    proyecto: parsed.proyecto || defaultData.proyecto,
+                    integrantes: parsed.integrantes && parsed.integrantes.length ? parsed.integrantes : defaultData.integrantes,
+                    etapas: parsed.etapas && parsed.etapas.length ? parsed.etapas : defaultData.etapas,
+                    tareas: Array.isArray(parsed.tareas) ? parsed.tareas : [],
+                    notificaciones: parsed.notificaciones || 0
+                };
+            } catch (e) {
+                return JSON.parse(JSON.stringify(defaultData));
+            }
+        }
+
+        function saveData() { /* Modo visualizacion: no se persiste localmente */ }
+        function generarIdTarea() { return "t_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+        function siguienteCodigo() {
+            const max = state.tareas.reduce((m, t) => Math.max(m, t.codigo || 0), 100);
+            return max + 1;
+        }
+
+        function getIniciales(nombre) {
+            return String(nombre || "").split(" ").filter(Boolean).slice(0, 2).map(function (n) { return n[0].toUpperCase(); }).join("");
+        }
+
+        function formatFecha(f) {
+            if (!f) return "—";
+            try {
+                const d = new Date(f + "T00:00:00");
+                return new Intl.DateTimeFormat("es-PE", { day: "2-digit", month: "2-digit", year: "numeric" }).format(d);
+            } catch (e) { return f; }
+        }
+
+        let state = { proyecto: { id: null, nombre: "" }, integrantes: [], etapas: [], tareas: [], notificaciones: 0 };
+
+        // (Los datos se cargan ahora desde el backend, ver cargarDatos al final del script.)
+        if (false) {
+            const E = {}, I = {};
+            state.etapas.forEach(function (e) { E[e.nombre] = e.id; });
+            state.integrantes.forEach(function (i) { I[i.nombre] = i.id; });
+            const T = function (o) { o.id = generarIdTarea(); o.dependencias = o.dependencias || []; return o; };
+            const t1 = T({ codigo: 101, nombre: "Definir requerimientos funcionales", descripcion: "Redactar y priorizar los RF del proyecto Colab.", etapaId: E["Análisis"], responsableId: I["Ana Pérez"], prioridad: "ALTA", estado: "COMPLETADA", duracionDias: 2, fechaInicio: "2026-10-13", fechaFin: "2026-10-14", orden: 1 });
+            const t2 = T({ codigo: 102, nombre: "Validar requerimientos con el equipo", descripcion: "Revisión conjunta de RF para asegurar el alcance MVP.", etapaId: E["Análisis"], responsableId: I["Luis Mendoza"], prioridad: "ALTA", estado: "COMPLETADA", duracionDias: 1, fechaInicio: "2026-10-15", fechaFin: "2026-10-15", orden: 2 });
+            const t3 = T({ codigo: 103, nombre: "Diseño de modelo de entidades", descripcion: "Definir entidades, atributos y relaciones del esquema.", etapaId: E["Diseño"], responsableId: I["María Rojas"], prioridad: "MEDIA", estado: "COMPLETADA", duracionDias: 2, fechaInicio: "2026-10-16", fechaFin: "2026-10-17", orden: 3, dependencias: [t1.id, t2.id] });
+            const t4 = T({ codigo: 104, nombre: "Prototipo UI de Tareas (Kanban + Lista)", descripcion: "Maquetar vistas de visualización y gestión de tareas.", etapaId: E["Diseño"], responsableId: I["Ana Pérez"], prioridad: "MEDIA", estado: "EN_PROGRESO", duracionDias: 2, fechaInicio: "2026-10-20", fechaFin: "2026-10-21", orden: 4, dependencias: [t3.id] });
+            const t5 = T({ codigo: 105, nombre: "Implementar CRUD de Tareas", descripcion: "Crear, editar, eliminar y reasignar tareas con validaciones.", etapaId: E["Desarrollo"], responsableId: I["Luis Mendoza"], prioridad: "ALTA", estado: "PENDIENTE", duracionDias: 3, fechaInicio: "2026-10-22", fechaFin: "2026-10-24", orden: 5, dependencias: [t4.id] });
+            const t6 = T({ codigo: 106, nombre: "API REST de gestión de tareas", descripcion: "Endpoints CRUD y validaciones de transiciones de estado.", etapaId: E["Desarrollo"], responsableId: I["María Rojas"], prioridad: "ALTA", estado: "PENDIENTE", duracionDias: 2, fechaInicio: "2026-10-22", fechaFin: "2026-10-23", orden: 6, dependencias: [t3.id] });
+            const t7 = T({ codigo: 107, nombre: "Integración de estado global y filtrado", descripcion: "Conectar filtros, buscador y badges de estado en la interfaz.", etapaId: E["Desarrollo"], responsableId: I["Ana Pérez"], prioridad: "MEDIA", estado: "PENDIENTE", duracionDias: 2, fechaInicio: "2026-10-24", fechaFin: "2026-10-25", orden: 7 });
+            const t8 = T({ codigo: 108, nombre: "Pruebas de flujo y validaciones", descripcion: "Verificar dependencias sin ciclos, fechas y estados.", etapaId: E["Pruebas"], responsableId: I["Luis Mendoza"], prioridad: "BAJA", estado: "PENDIENTE", duracionDias: 1, fechaInicio: "2026-10-27", fechaFin: "2026-10-27", orden: 8, dependencias: [t5.id] });
+            const t9 = T({ codigo: 109, nombre: "Pruebas de usabilidad y entrega final", descripcion: "Evaluación heurística de la interfaz con 5 estudiantes.", etapaId: E["Pruebas"], responsableId: I["María Rojas"], prioridad: "BAJA", estado: "PENDIENTE", duracionDias: 1, fechaInicio: "2026-10-28", fechaFin: "2026-10-28", orden: 9 });
+            state.tareas = [t1, t2, t3, t4, t5, t6, t7, t8, t9];
+            saveData();
+        }
+        // Compatibilidad: asignar código a tareas antiguas sin código
+        (function () {
+            let next = 100;
+            state.tareas.forEach(function (t) {
+                if (!t.codigo) { next = Math.max(next + 1, state.tareas.reduce(function (m, x) { return Math.max(m, x.codigo || 0); }, 100) + 1); t.codigo = next; }
+            });
+            saveData();
+        })();
+
+        // ===== Elementos =====
+        const avatarInicialEl = document.getElementById("avatarInicial");
+        const userNombreEl = document.getElementById("userNombre");
+        const tabBtns = document.querySelectorAll(".tab-btn");
+        const tabContents = document.querySelectorAll(".tab-content");
+        const etapasBoardEl = document.getElementById("etapasBoard");
+        const statsStripEl = document.getElementById("statsStrip");
+        const scopeTodas = document.getElementById("scopeTodas");
+        const scopeMias = document.getElementById("scopeMias");
+        const scopeTodasCount = document.getElementById("scopeTodasCount");
+        const searchTareas = document.getElementById("searchTareas");
+        const btnLimpiarFiltros = document.getElementById("btnLimpiarFiltros");
+        const btnIrGestion = document.getElementById("btnIrGestion");
+        const btnAccederGestion = document.getElementById("btnAccederGestion");
+        const btnVolverViz = document.getElementById("btnVolverViz");
+        const btnNuevaTarea = document.getElementById("btnNuevaTarea");
+        const tbodyGestionEl = document.getElementById("tbodyGestion");
+        const emptyGestionEl = document.getElementById("emptyGestion");
+        const searchGestion = document.getElementById("searchGestion");
+        const filtroEtapaGestion = document.getElementById("filtroEtapaGestion");
+        const filtroEstadoGestion = document.getElementById("filtroEstadoGestion");
+        const modalTareaEl = document.getElementById("modalTarea");
+        const modalTituloEl = document.getElementById("modalTitulo");
+        const btnCerrarModal = document.getElementById("btnCerrarModal");
+        const btnCancelarModal = document.getElementById("btnCancelarModal");
+        const formTarea = document.getElementById("formTarea");
+        const btnGuardarTexto = document.getElementById("btnGuardarTexto");
+        const inputNombre = document.getElementById("inputNombre");
+        const inputDescripcion = document.getElementById("inputDescripcion");
+        const selectEtapa = document.getElementById("selectEtapa");
+        const selectResponsable = document.getElementById("selectResponsable");
+        const selectPrioridad = document.getElementById("selectPrioridad");
+        const selectEstado = document.getElementById("selectEstado");
+        const inputFechaInicio = document.getElementById("inputFechaInicio");
+        const inputFechaFin = document.getElementById("inputFechaFin");
+        const inputDuracion = document.getElementById("inputDuracion");
+        const dependenciasGroup = document.getElementById("dependenciasGroup");
+
+        let editandoId = null;
+        let scope = "todas"; // todas | mias
+        let filtros = { search: "" };
+        let filtrosGestion = { search: "", etapa: "todas", estado: "todos" };
+
+        const ESTADOS = [
+            { key: "PENDIENTE", label: "Pendiente" },
+            { key: "EN_PROGRESO", label: "En progreso" },
+            { key: "COMPLETADA", label: "Completada" },
+            { key: "BLOQUEADA", label: "Bloqueada" }
+        ];
+        function estadoLabel(e) {
+            const f = ESTADOS.find(function (x) { return x.key === e; });
+            return f ? f.label : e;
+        }
+        function estadoBadgeClass(e) { return "badge-" + String(e || "").toLowerCase().replace("_", ""); }
+
+        function currentUser() { return state.integrantes[0] || { id: null, nombre: "Ana Pérez" }; }
+
+        function esTareaBloqueada(tarea) {
+            if (!tarea.dependencias || tarea.dependencias.length === 0) return false;
+            return tarea.dependencias.some(function (depId) {
+                const t = state.tareas.find(function (x) { return x.id === depId; });
+                if (!t) return true;
+                return t.estado !== "COMPLETADA";
+            });
+        }
+
+        function recalcularEstadosBloqueados() {
+            let changed = false;
+            state.tareas.forEach(function (t) {
+                const bloqueada = esTareaBloqueada(t);
+                if (bloqueada && t.estado !== "BLOQUEADA") { t.estado = "BLOQUEADA"; changed = true; }
+                if (!bloqueada && t.estado === "BLOQUEADA") { t.estado = "PENDIENTE"; changed = true; }
+            });
+            if (changed) saveData();
+        }
+
+        function tieneCiclo(nuevaTareaId, predecesoraId) {
+            if (nuevaTareaId === predecesoraId) return true;
+            const visit = new Set(), stack = new Set();
+            function dfs(id) {
+                if (stack.has(id)) return true;
+                if (visit.has(id)) return false;
+                visit.add(id); stack.add(id);
+                const t = state.tareas.find(function (x) { return x.id === id; });
+                if (t && t.dependencias) {
+                    for (const d of t.dependencias) { if (dfs(d)) return true; }
+                }
+                stack.delete(id);
+                return false;
+            }
+            const tareaEdit = state.tareas.find(function (x) { return x.id === nuevaTareaId; });
+            const depsSimulados = new Set(tareaEdit ? tareaEdit.dependencias || [] : []);
+            depsSimulados.add(predecesoraId);
+            for (const d of depsSimulados) { if (dfs(d)) return true; }
+            return false;
+        }
+
+        function tareasFiltradasViz() {
+            let list = state.tareas.slice();
+            const me = currentUser();
+            if (scope === "mias") list = list.filter(function (t) { return t.responsableId === me.id; });
+            if (filtros.search) {
+                const s = filtros.search.toLowerCase().replace("#", "");
+                list = list.filter(function (t) {
+                    const resp = state.integrantes.find(function (r) { return r.id === t.responsableId; });
+                    return (t.nombre || "").toLowerCase().includes(s) ||
+                        (t.descripcion || "").toLowerCase().includes(s) ||
+                        (resp ? resp.nombre : "").toLowerCase().includes(s) ||
+                        String(t.codigo || "").includes(s);
+                });
+            }
+            return list.sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
+        }
+
+        function renderStats() {
+            const total = state.tareas.length;
+            const comp = state.tareas.filter(function (t) { return t.estado === "COMPLETADA"; }).length;
+            const prog = state.tareas.filter(function (t) { return t.estado === "EN_PROGRESO"; }).length;
+            const pend = state.tareas.filter(function (t) { return t.estado === "PENDIENTE"; }).length;
+            const bloq = state.tareas.filter(function (t) { return t.estado === "BLOQUEADA"; }).length;
+            const pct = total ? Math.round((comp / total) * 100) : 0;
+            scopeTodasCount.textContent = "(" + total + ")";
+            statsStripEl.innerHTML =
+                '<span class="stat-chip"><i class="ph ph-stack"></i> Total: <strong>' + total + ' tareas</strong></span>' +
+                '<span class="stat-chip"><span class="stat-dot" style="background:#10b981"></span> Completadas <strong>' + comp + '</strong></span>' +
+                '<span class="stat-chip"><span class="stat-dot" style="background:#0f7bff"></span> En Progreso <strong>' + prog + '</strong></span>' +
+                '<span class="stat-chip"><span class="stat-dot" style="background:#f59e0b"></span> Pendientes <strong>' + pend + '</strong></span>' +
+                '<span class="stat-chip"><span class="stat-dot" style="background:#ef4444"></span> Bloqueadas <strong>' + bloq + '</strong></span>' +
+                '<span class="progress-wrap">Avance Global: ' + pct + '% <span class="progress-track"><span class="progress-fill" style="width:' + pct + '%"></span></span></span>';
+        }
+
+        function etapaStatus(etapaId) {
+            const ts = state.tareas.filter(function (t) { return t.etapaId === etapaId; });
+            if (!ts.length) return { label: "SIN TAREAS", cls: "idle" };
+            const comp = ts.filter(function (t) { return t.estado === "COMPLETADA"; }).length;
+            const bloq = ts.filter(function (t) { return t.estado === "BLOQUEADA"; }).length;
+            const prog = ts.filter(function (t) { return t.estado === "EN_PROGRESO"; }).length;
+            if (comp === ts.length) return { label: Math.round((comp / ts.length) * 100) + "% COMPLETADA", cls: "ok" };
+            if (bloq > 0) return { label: "EN EJECUCIÓN CRÍTICA", cls: "warn" };
+            if (prog > 0) return { label: "EN PROGRESO", cls: "info" };
+            return { label: "PENDIENTE DE INICIO", cls: "idle" };
+        }
+
+        function depInfo(t) {
+            const deps = (t.dependencias || []).map(function (d) { return state.tareas.find(function (x) { return x.id === d; }); }).filter(Boolean);
+            if (!deps.length) return { cls: "ok", html: '<span class="dep-label">DEPENDENCIAS</span>Sin dependencias previas' };
+            const pendientes = deps.filter(function (d) { return d.estado !== "COMPLETADA"; });
+            if (pendientes.length) {
+                return {
+                    cls: "bad",
+                    html: '<span class="dep-label">DEPENDENCIAS</span>Bloqueada por: ' +
+                        pendientes.map(function (d) { return "#" + d.codigo + " " + d.nombre + " (" + estadoLabel(d.estado).toUpperCase() + ")"; }).join(" · ")
+                };
+            }
+            return { cls: "neutral", html: '<span class="dep-label">DEPENDENCIAS</span>' + deps.map(function (d) { return "#" + d.codigo + " " + d.nombre; }).join(" · ") };
+        }
+
+        function crearCardTarea(t) {
+            const card = document.createElement("article");
+            card.className = "task-card" + (t.estado === "BLOQUEADA" ? " is-blocked" : "");
+            card.draggable = t.estado !== "BLOQUEADA";
+            card.dataset.id = t.id;
+            const resp = state.integrantes.find(function (r) { return r.id === t.responsableId; });
+            const dep = depInfo(t);
+            card.innerHTML =
+                '<div class="card-top">' +
+                    '<span class="card-code">#' + t.codigo + '</span>' +
+                    '<span class="badge badge-' + String(t.prioridad || "").toLowerCase() + '">' + (t.prioridad || "") + '</span>' +
+                    '<span class="badge ' + estadoBadgeClass(t.estado) + '">' + estadoLabel(t.estado).toUpperCase() + '</span>' +
+                    '<span class="card-actions">' +
+                        '<button class="icon-btn" data-action="ver" title="Ver/Editar"><i class="ph ph-pencil-simple"></i></button>' +
+                        '<button class="icon-btn danger" data-action="eliminar" title="Eliminar"><i class="ph ph-trash"></i></button>' +
+                    '</span>' +
+                '</div>' +
+                '<h4 class="card-title">' + escapeHtml(t.nombre) + '</h4>' +
+                (t.descripcion ? '<p class="card-desc">' + escapeHtml(t.descripcion) + '</p>' : '') +
+                '<div class="card-dates">' +
+                    '<span class="d-range"><i class="ph ph-calendar-blank"></i> ' + formatFecha(t.fechaInicio) + ' – ' + formatFecha(t.fechaFin) + '</span>' +
+                    '<span class="days-pill">' + t.duracionDias + ' días</span>' +
+                '</div>' +
+                '<div class="dep-box ' + dep.cls + '">' + dep.html + '</div>' +
+                '<div class="card-footer">' +
+                    '<div class="resp">' +
+                        (resp
+                            ? '<span class="avatar-sm" style="background:' + avatarBg(resp.id) + '">' + getIniciales(resp.nombre) + '</span><span>' + escapeHtml(resp.nombre) + '</span>'
+                            : '<span class="avatar-sm" style="background:#cbd5e1;color:#475569">—</span><span>Sin asignar</span>') +
+                    '</div>' +
+                    '<span class="resp-role">' + (resp ? (ROL_LABEL[resp.rol] || resp.rol || "") : "") + '</span>' +
+                '</div>';
+            card.addEventListener("click", function (e) {
+                const btn = e.target.closest(".icon-btn");
+                if (!btn) return;
+                e.stopPropagation();
+                if (btn.dataset.action === "ver") abrirModalEditar(t.id);
+                if (btn.dataset.action === "eliminar") eliminarTarea(t.id);
+            });
+            card.addEventListener("dragstart", function (e) {
+                card.classList.add("dragging");
+                e.dataTransfer.setData("text/plain", t.id);
+                e.dataTransfer.effectAllowed = "move";
+            });
+            card.addEventListener("dragend", function () { card.classList.remove("dragging"); });
+            return card;
+        }
+
+        function escapeHtml(s) {
+            return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+            });
+        }
+
+        function renderEtapas() {
+            renderStats();
+            etapasBoardEl.innerHTML = "";
+            const viz = tareasFiltradasViz();
+            const etapas = state.etapas.slice().sort(function (a, b) { return a.orden - b.orden; });
+            if (!viz.length) {
+                const empty = document.createElement("div");
+                empty.className = "empty-state";
+                empty.innerHTML = '<i class="ph ph-kanban" style="font-size:3rem;color:#cbd5e1"></i><h3>No hay tareas que coincidan</h3><p>Ajusta los filtros o crea una nueva tarea.</p>';
+                etapasBoardEl.appendChild(empty);
+                return;
+            }
+            etapas.forEach(function (et, idx) {
+                const ts = viz.filter(function (t) { return t.etapaId === et.id; });
+                if (!ts.length && filtros.search) return; // ocultar etapas vacías al buscar
+                const st = etapaStatus(et.id);
+                const block = document.createElement("div");
+                block.className = "etapa-block";
+                block.innerHTML =
+                    '<div class="etapa-header">' +
+                        '<div class="etapa-left">' +
+                            '<span class="etapa-num">' + (idx + 1) + '</span>' +
+                            '<div><div class="etapa-title">Etapa: ' + escapeHtml(et.nombre) + ' <span class="etapa-pill ' + st.cls + '">' + st.label + '</span></div>' +
+                            '<div class="etapa-desc">' + escapeHtml(et.descripcion || "") + '</div></div>' +
+                        '</div>' +
+                        '<span class="etapa-count">' + ts.length + ' tareas</span>' +
+                    '</div>';
+                const grid = document.createElement("div");
+                grid.className = "cards-grid";
+                grid.dataset.etapa = et.id;
+                ts.forEach(function (t) { grid.appendChild(crearCardTarea(t)); });
+                block.appendChild(grid);
+                etapasBoardEl.appendChild(block);
+            });
+        }
+
+        // ===== Drag & drop entre etapas =====
+        etapasBoardEl.addEventListener("dragover", function (e) {
+            e.preventDefault();
+            const grid = e.target.closest(".cards-grid");
+            if (grid) { grid.classList.add("drop-hover"); e.dataTransfer.dropEffect = "move"; }
+        });
+        etapasBoardEl.addEventListener("dragleave", function (e) {
+            const grid = e.target.closest(".cards-grid");
+            if (grid) grid.classList.remove("drop-hover");
+        });
+        etapasBoardEl.addEventListener("drop", function (e) {
+            e.preventDefault();
+            document.querySelectorAll(".cards-grid.drop-hover").forEach(function (el) { el.classList.remove("drop-hover"); });
+            const id = e.dataTransfer.getData("text/plain");
+            const grid = e.target.closest(".cards-grid");
+            if (!id || !grid) return;
+            const t = state.tareas.find(function (x) { return x.id === id; });
+            if (!t || t.estado === "BLOQUEADA") return;
+            t.etapaId = grid.dataset.etapa;
+            saveData();
+            renderAll();
+        });
+
+        // ===== Gestión (tabla) =====
+        function renderGestion() {
+            tbodyGestionEl.innerHTML = "";
+            let list = state.tareas.slice();
+            if (filtrosGestion.search) {
+                const s = filtrosGestion.search.toLowerCase().replace("#", "");
+                list = list.filter(function (t) {
+                    const etapa = state.etapas.find(function (e) { return e.id === t.etapaId; });
+                    const resp = state.integrantes.find(function (r) { return r.id === t.responsableId; });
+                    return (t.nombre || "").toLowerCase().includes(s) ||
+                        (t.descripcion || "").toLowerCase().includes(s) ||
+                        (etapa ? etapa.nombre : "").toLowerCase().includes(s) ||
+                        (resp ? resp.nombre : "").toLowerCase().includes(s) ||
+                        String(t.codigo || "").includes(s);
+                });
+            }
+            if (filtrosGestion.etapa !== "todas") list = list.filter(function (t) { return t.etapaId === filtrosGestion.etapa; });
+            if (filtrosGestion.estado !== "todos") list = list.filter(function (t) { return t.estado === filtrosGestion.estado; });
+            list.sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
+            if (!list.length) { emptyGestionEl.style.display = "flex"; return; }
+            emptyGestionEl.style.display = "none";
+            list.forEach(function (t) {
+                const tr = document.createElement("tr");
+                if (t.estado === "BLOQUEADA") tr.classList.add("is-blocked");
+                const etapa = state.etapas.find(function (e) { return e.id === t.etapaId; });
+                const resp = state.integrantes.find(function (r) { return r.id === t.responsableId; });
+                const deps = (t.dependencias || []).map(function (d) {
+                    const f = state.tareas.find(function (x) { return x.id === d; });
+                    return f ? "#" + f.codigo + " " + f.nombre : "—";
+                });
+                tr.innerHTML =
+                    '<td><div style="display:flex;flex-direction:column;gap:.2rem"><strong>#' + t.codigo + ' · ' + escapeHtml(t.nombre) + '</strong>' +
+                    (t.descripcion ? '<span class="help-text">' + escapeHtml(t.descripcion) + '</span>' : '') + '</div></td>' +
+                    '<td>' + (etapa ? escapeHtml(etapa.nombre) : "—") + '</td>' +
+                    '<td>' + (resp ? escapeHtml(resp.nombre) : "Sin asignar") + '</td>' +
+                    '<td><span class="badge badge-' + String(t.prioridad || "").toLowerCase() + '">' + (t.prioridad || "") + '</span></td>' +
+                    '<td><span class="badge ' + estadoBadgeClass(t.estado) + '">' + estadoLabel(t.estado).toUpperCase() + '</span></td>' +
+                    '<td>' + formatFecha(t.fechaInicio) + ' – ' + formatFecha(t.fechaFin) + '</td>' +
+                    '<td>' + t.duracionDias + ' día' + (t.duracionDias === 1 ? "" : "s") + '</td>' +
+                    '<td>' + (deps.length ? deps.map(escapeHtml).join("<br>") : "Sin dependencias") + '</td>' +
+                    '<td><div class="flex-center">' +
+                        '<button class="btn btn-xs btn-outline" data-action="editar" data-id="' + t.id + '"><i class="ph ph-pencil-simple"></i> Editar</button>' +
+                        '<button class="btn btn-xs btn-danger-soft" data-action="eliminar" data-id="' + t.id + '"><i class="ph ph-trash"></i> Eliminar</button>' +
+                    '</div></td>';
+                tbodyGestionEl.appendChild(tr);
+            });
+            tbodyGestionEl.querySelectorAll("[data-action]").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    if (btn.dataset.action === "editar") abrirModalEditar(btn.dataset.id);
+                    if (btn.dataset.action === "eliminar") eliminarTarea(btn.dataset.id);
+                });
+            });
+        }
+
+        function renderAll() {
+            recalcularEstadosBloqueados();
+            renderEtapas();
+            renderGestion();
+        }
+
+        // ===== Modal =====
+        function abrirModalNuevo() {
+            if (MODO_SOLO_VISUALIZACION) { avisoNoDisponible(); return; }
+            editandoId = null;
+            modalTituloEl.textContent = "Nueva Tarea";
+            btnGuardarTexto.textContent = "Guardar Tarea";
+            formTarea.reset();
+            inputDuracion.value = 1;
+            selectPrioridad.value = "MEDIA";
+            selectEstado.value = "PENDIENTE";
+            selectEstado.disabled = false;
+            inputFechaInicio.value = "";
+            inputFechaFin.value = "";
+            renderDependencias("");
+            modalTareaEl.classList.add("show");
+            inputNombre.focus();
+        }
+
+        function abrirModalEditar(id) {
+            if (MODO_SOLO_VISUALIZACION) { avisoNoDisponible(); return; }
+            const t = state.tareas.find(function (x) { return x.id === id; });
+            if (!t) return;
+            editandoId = id;
+            modalTituloEl.textContent = "Editar Tarea #" + t.codigo;
+            btnGuardarTexto.textContent = "Guardar Cambios";
+            inputNombre.value = t.nombre;
+            inputDescripcion.value = t.descripcion || "";
+            selectEtapa.value = t.etapaId;
+            selectResponsable.value = t.responsableId || "";
+            selectPrioridad.value = t.prioridad;
+            selectEstado.value = t.estado;
+            selectEstado.disabled = t.estado === "BLOQUEADA";
+            inputDuracion.value = t.duracionDias;
+            inputFechaInicio.value = t.fechaInicio || "";
+            inputFechaFin.value = t.fechaFin || "";
+            renderDependencias(id);
+            modalTareaEl.classList.add("show");
+            inputNombre.focus();
+        }
+
+        function cerrarModal() { modalTareaEl.classList.remove("show"); editandoId = null; }
+
+        function renderDependencias(excluirId) {
+            dependenciasGroup.innerHTML = "";
+            const ordenadas = state.tareas.filter(function (x) { return x.id !== excluirId; })
+                .sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
+            if (!ordenadas.length) {
+                dependenciasGroup.innerHTML = '<p class="help-text">No hay otras tareas para establecer dependencias.</p>';
+                return;
+            }
+            const tareaEdit = state.tareas.find(function (x) { return x.id === excluirId; });
+            const depsEdit = new Set(tareaEdit ? tareaEdit.dependencias || [] : []);
+            ordenadas.forEach(function (t) {
+                const etapa = state.etapas.find(function (e) { return e.id === t.etapaId; });
+                const item = document.createElement("label");
+                item.className = "checkbox-item";
+                item.innerHTML = '<input type="checkbox" value="' + t.id + '"' + (depsEdit.has(t.id) ? " checked" : "") + ' />' +
+                    '<div class="checkbox-text"><span class="checkbox-title">#' + t.codigo + ' · ' + escapeHtml(t.nombre) + '</span>' +
+                    '<span class="checkbox-sub">' + (etapa ? escapeHtml(etapa.nombre) : "—") + ' • ' + estadoLabel(t.estado) + ' • ' + t.duracionDias + ' días</span></div>';
+                dependenciasGroup.appendChild(item);
+            });
+        }
+
+        function eliminarTarea(id) {
+            if (MODO_SOLO_VISUALIZACION) { avisoNoDisponible(); return; }
+            const t = state.tareas.find(function (x) { return x.id === id; });
+            if (!t) return;
+            if (!confirm('¿Eliminar la tarea "#' + t.codigo + " " + t.nombre + '"? Esta acción no se puede deshacer.')) return;
+            state.tareas = state.tareas.filter(function (x) { return x.id !== id; });
+            state.tareas.forEach(function (tt) { tt.dependencias = (tt.dependencias || []).filter(function (d) { return d !== id; }); });
+            saveData();
+            renderAll();
+        }
+
+        function limpiarFiltros() {
+            scope = "todas";
+            scopeTodas.classList.add("active");
+            scopeMias.classList.remove("active");
+            filtros = { search: "" };
+            filtrosGestion = { search: "", etapa: "todas", estado: "todos" };
+            searchTareas.value = "";
+            searchGestion.value = "";
+            filtroEtapaGestion.value = "todas";
+            filtroEstadoGestion.value = "todos";
+            renderAll();
+        }
+
+        function irTab(tab) {
+            tabBtns.forEach(function (b) { b.classList.toggle("active", b.dataset.tab === tab); });
+            tabContents.forEach(function (c) { c.classList.toggle("active", c.dataset.content === tab); });
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        // ===== Init =====
+        function initUIBase() {
+            const user = currentUser();
+            userNombreEl.textContent = user.nombre || "Ana Pérez";
+            avatarInicialEl.textContent = getIniciales(user.nombre || "AP");
+            scopeMias.innerHTML = '<i class="ph ph-user"></i> Mis tareas (' + escapeHtml(user.nombre || "") + ')';
+            filtroEtapaGestion.innerHTML = '<option value="todas">Todas las etapas</option>';
+            selectEtapa.innerHTML = "";
+            state.etapas.slice().sort(function (a, b) { return a.orden - b.orden; }).forEach(function (e) {
+                const o1 = document.createElement("option"); o1.value = e.id; o1.textContent = e.orden + ". " + e.nombre;
+                filtroEtapaGestion.appendChild(o1);
+                const o3 = document.createElement("option"); o3.value = e.id; o3.textContent = e.orden + ". " + e.nombre;
+                selectEtapa.appendChild(o3);
+            });
+            selectResponsable.innerHTML = '<option value="">Sin asignar</option>';
+            state.integrantes.forEach(function (i) {
+                const o = document.createElement("option"); o.value = i.id; o.textContent = i.nombre + " • " + i.rol;
+                selectResponsable.appendChild(o);
+            });
+        }
+
+        tabBtns.forEach(function (btn) { btn.addEventListener("click", function () { irTab(btn.dataset.tab); }); });
+        btnIrGestion.addEventListener("click", function () { irTab("gestion"); });
+        btnAccederGestion.addEventListener("click", function () { irTab("gestion"); });
+        btnVolverViz.addEventListener("click", function () { irTab("visualizacion"); });
+        btnNuevaTarea.addEventListener("click", abrirModalNuevo);
+        btnLimpiarFiltros.addEventListener("click", limpiarFiltros);
+
+        scopeTodas.addEventListener("click", function () {
+            scope = "todas";
+            scopeTodas.classList.add("active"); scopeMias.classList.remove("active");
+            renderEtapas();
+        });
+        scopeMias.addEventListener("click", function () {
+            scope = "mias";
+            scopeMias.classList.add("active"); scopeTodas.classList.remove("active");
+            renderEtapas();
+        });
+        searchTareas.addEventListener("input", function (e) { filtros.search = e.target.value; renderEtapas(); });
+        searchGestion.addEventListener("input", function (e) { filtrosGestion.search = e.target.value; renderGestion(); });
+        filtroEtapaGestion.addEventListener("change", function (e) { filtrosGestion.etapa = e.target.value; renderGestion(); });
+        filtroEstadoGestion.addEventListener("change", function (e) { filtrosGestion.estado = e.target.value; renderGestion(); });
+
+        btnCerrarModal.addEventListener("click", cerrarModal);
+        btnCancelarModal.addEventListener("click", cerrarModal);
+        modalTareaEl.addEventListener("click", function (e) { if (e.target === modalTareaEl) cerrarModal(); });
+        document.addEventListener("keydown", function (e) { if (e.key === "Escape" && modalTareaEl.classList.contains("show")) cerrarModal(); });
+
+        formTarea.addEventListener("submit", function (e) {
+            e.preventDefault();
+            if (MODO_SOLO_VISUALIZACION) { avisoNoDisponible(); return; }
+            const nombre = inputNombre.value.trim();
+            if (!nombre) return;
+            const etapaId = selectEtapa.value;
+            const prioridad = selectPrioridad.value;
+            const estadoSel = selectEstado.value;
+            const duracion = Math.max(1, parseInt(inputDuracion.value) || 1);
+            const responsableId = selectResponsable.value ? (isNaN(Number(selectResponsable.value)) ? selectResponsable.value : Number(selectResponsable.value)) : null;
+            const deps = Array.from(dependenciasGroup.querySelectorAll("input:checked")).map(function (i) { return i.value; });
+
+            if (editandoId) {
+                const t = state.tareas.find(function (x) { return x.id === editandoId; });
+                if (!t) return;
+                for (const d of deps) {
+                    if (tieneCiclo(editandoId, d)) { alert("No se permiten ciclos entre dependencias (Finish-to-Start). Revisa las dependencias seleccionadas."); return; }
+                }
+                t.nombre = nombre;
+                t.descripcion = inputDescripcion.value.trim();
+                t.etapaId = etapaId;
+                t.responsableId = responsableId;
+                t.prioridad = prioridad;
+                t.duracionDias = duracion;
+                t.dependencias = deps;
+                if (t.estado !== "BLOQUEADA") t.estado = estadoSel;
+                t.fechaInicio = inputFechaInicio.value || t.fechaInicio;
+                t.fechaFin = inputFechaFin.value || t.fechaFin;
+            } else {
+                const nueva = {
+                    id: generarIdTarea(),
+                    codigo: siguienteCodigo(),
+                    nombre: nombre,
+                    descripcion: inputDescripcion.value.trim(),
+                    etapaId: etapaId,
+                    responsableId: responsableId,
+                    prioridad: prioridad,
+                    estado: estadoSel === "BLOQUEADA" ? "PENDIENTE" : estadoSel,
+                    duracionDias: duracion,
+                    fechaInicio: inputFechaInicio.value || "",
+                    fechaFin: inputFechaFin.value || "",
+                    dependencias: deps,
+                    orden: state.tareas.length + 1
+                };
+                for (const d of nueva.dependencias) {
+                    if (tieneCiclo(nueva.id, d)) { alert("No se permiten ciclos entre dependencias (Finish-to-Start). Ajusta las dependencias."); return; }
+                }
+                state.tareas.push(nueva);
+            }
+            saveData();
+            cerrarModal();
+            renderAll();
+        });
+
+        if (CONFIG.token && CONFIG.proyectoId) {
+            cargarDatos().then(function () {
+                initUIBase();
+                renderAll();
+                if (CONFIG.tab === "gestion") { irTab("gestion"); }
+            }).catch(function (err) {
+                alert("No se pudieron cargar las tareas desde el backend: " + err.message);
+            });
+        } else {
+            alert("Abre esta interfaz desde la consola de Colab (opciones 17/18) para cargar las tareas del proyecto.");
+        }
+    </script>
+</body>
+
+</html>

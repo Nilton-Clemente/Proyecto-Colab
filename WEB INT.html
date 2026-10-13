@@ -584,6 +584,79 @@
     <script>
         const LS_KEY = "colab_tareas_v1";
 
+        // ===== Conexion con el backend (datos dinamicos) =====
+        const API_BASE = "http://localhost:8081";
+        const MODO_SOLO_VISUALIZACION = true;
+
+        function leerParams() {
+            const q = new URLSearchParams(window.location.search);
+            return {
+                token: q.get("token") || "",
+                proyectoId: q.get("proyectoId") || "",
+                tab: q.get("tab") || "visualizacion"
+            };
+        }
+        const CONFIG = leerParams();
+
+        function avisoNoDisponible() {
+            alert("Accion no disponible por ahora (modo visualizacion). Las tareas solo se muestran en modo lectura.");
+        }
+
+        async function apiFetch(ruta) {
+            const resp = await fetch(API_BASE + ruta, {
+                headers: { "Authorization": "Bearer " + CONFIG.token }
+            });
+            if (!resp.ok) {
+                throw new Error("HTTP " + resp.status + " en " + ruta);
+            }
+            return resp.json();
+        }
+
+        function mapearTarea(t) {
+            return {
+                id: t.id,
+                codigo: (t.orden != null ? t.orden : t.id),
+                nombre: t.nombre,
+                descripcion: t.descripcion,
+                etapaId: t.etapaId,
+                etapaNombre: t.etapaNombre,
+                responsableId: t.responsableId,
+                prioridad: t.prioridad,
+                estado: t.estado,
+                duracionDias: t.duracionDias,
+                fechaInicio: t.fechaInicio,
+                fechaFin: t.fechaFin,
+                orden: t.orden,
+                dependencias: t.dependencias || []
+            };
+        }
+
+        function derivarEtapas(tareas) {
+            const map = {};
+            tareas.forEach(function (t) {
+                const key = t.etapaId;
+                if (map[key] == null) {
+                    map[key] = { id: t.etapaId, nombre: t.etapaNombre || ("Etapa " + t.etapaId), orden: t.orden || 999999 };
+                } else {
+                    if ((t.orden || 999999) < map[key].orden) { map[key].orden = t.orden; }
+                }
+            });
+            return Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
+        }
+
+        async function cargarDatos() {
+            const [tareasResp, integrantesResp] = await Promise.all([
+                apiFetch("/api/proyectos/" + CONFIG.proyectoId + "/tareas"),
+                apiFetch("/api/proyectos/" + CONFIG.proyectoId + "/integrantes")
+            ]);
+            state.integrantes = (integrantesResp || []).map(function (i) {
+                return { id: i.integranteId, nombre: i.nombre, email: i.email, rol: i.rol };
+            });
+            state.tareas = (tareasResp || []).map(mapearTarea);
+            state.etapas = derivarEtapas(state.tareas);
+            state.proyecto = { id: Number(CONFIG.proyectoId), nombre: "Proyecto #" + CONFIG.proyectoId };
+        }
+
         const AVATAR_GRADIENTS = [
             "linear-gradient(135deg,#0f7bff,#7c3aed)",
             "linear-gradient(135deg,#f59e0b,#ef4444)",
@@ -631,7 +704,7 @@
             }
         }
 
-        function saveData() { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+        function saveData() { /* Modo visualizacion: no se persiste localmente */ }
         function generarIdTarea() { return "t_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
         function siguienteCodigo() {
             const max = state.tareas.reduce((m, t) => Math.max(m, t.codigo || 0), 100);
@@ -650,10 +723,10 @@
             } catch (e) { return f; }
         }
 
-        let state = loadData();
+        let state = { proyecto: { id: null, nombre: "" }, integrantes: [], etapas: [], tareas: [], notificaciones: 0 };
 
-        // Datos de ejemplo (9 tareas) si está vacío
-        if (state.tareas.length === 0) {
+        // (Los datos se cargan ahora desde el backend, ver cargarDatos al final del script.)
+        if (false) {
             const E = {}, I = {};
             state.etapas.forEach(function (e) { E[e.nombre] = e.id; });
             state.integrantes.forEach(function (i) { I[i.nombre] = i.id; });
@@ -1011,6 +1084,7 @@
 
         // ===== Modal =====
         function abrirModalNuevo() {
+            if (MODO_SOLO_VISUALIZACION) { avisoNoDisponible(); return; }
             editandoId = null;
             modalTituloEl.textContent = "Nueva Tarea";
             btnGuardarTexto.textContent = "Guardar Tarea";
@@ -1027,6 +1101,7 @@
         }
 
         function abrirModalEditar(id) {
+            if (MODO_SOLO_VISUALIZACION) { avisoNoDisponible(); return; }
             const t = state.tareas.find(function (x) { return x.id === id; });
             if (!t) return;
             editandoId = id;
@@ -1071,6 +1146,7 @@
         }
 
         function eliminarTarea(id) {
+            if (MODO_SOLO_VISUALIZACION) { avisoNoDisponible(); return; }
             const t = state.tareas.find(function (x) { return x.id === id; });
             if (!t) return;
             if (!confirm('¿Eliminar la tarea "#' + t.codigo + " " + t.nombre + '"? Esta acción no se puede deshacer.')) return;
@@ -1149,6 +1225,7 @@
 
         formTarea.addEventListener("submit", function (e) {
             e.preventDefault();
+            if (MODO_SOLO_VISUALIZACION) { avisoNoDisponible(); return; }
             const nombre = inputNombre.value.trim();
             if (!nombre) return;
             const etapaId = selectEtapa.value;
@@ -1200,8 +1277,17 @@
             renderAll();
         });
 
-        initUIBase();
-        renderAll();
+        if (CONFIG.token && CONFIG.proyectoId) {
+            cargarDatos().then(function () {
+                initUIBase();
+                renderAll();
+                if (CONFIG.tab === "gestion") { irTab("gestion"); }
+            }).catch(function (err) {
+                alert("No se pudieron cargar las tareas desde el backend: " + err.message);
+            });
+        } else {
+            alert("Abre esta interfaz desde la consola de Colab (opciones 17/18) para cargar las tareas del proyecto.");
+        }
     </script>
 </body>
 
